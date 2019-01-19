@@ -153,8 +153,7 @@
 			
 			function render() {
 				var timer = Date.now() * 0.0002;
-				camera.position.x = Math.sin( timer ) * 7;
-				camera.position.z = Math.cos( timer ) * 7;
+				camera.rotation.y += 0.005;
 				camera.lookAt( cameraTarget );
 				renderer.render( scene, camera );
 			}
