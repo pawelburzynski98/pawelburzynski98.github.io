@@ -80,15 +80,13 @@
 
 				var ground = new THREE.Mesh(
 					new THREE.PlaneBufferGeometry( 2400, 2400 ),
-					new THREE.ShadowMaterial( { color: 0x000000, opacity: 1.0, depthWrite: false }
+					new THREE.ShadowMaterial( { color: 0x000000, depthWrite: false }
 				) );
 				ground.rotation.x = - Math.PI / 2;
 				ground.receiveShadow = true;
-				ground.renderOrder = 1;
 				scene.add( ground );
 
 				var grid = new THREE.GridHelper( 400, 40, 0x000000, 0x000000 );
-				grid.material.opacity = 1.0;
 				grid.material.depthWrite = false;
 				grid.material.transparent = true;
 				scene.add( grid );
