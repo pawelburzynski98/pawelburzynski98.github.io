@@ -72,17 +72,17 @@
 				scene = new THREE.Scene();
 				scene.fog = new THREE.Fog( 0xd7cbb1, 1, 80 );
 
-			//	envMap = new THREE.CubeTextureLoader()
-		//			.setPath( 'skyboxsun25deg/')
-	//				.load( [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ] );
+				envMap = new THREE.CubeTextureLoader()
+					.setPath( 'skyboxsun25deg/')
+					.load( [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ] );
 
-				//scene.background = envMap;
+				scene.background = envMap;
 
 				var ground = new THREE.Mesh(
 					new THREE.PlaneBufferGeometry( 2400, 2400 ),
-					new THREE.ShadowMaterial( { color: 0x000000, depthWrite: false }
+					new THREE.ShadowMaterial( { color: 0xFF0000, depthWrite: false }
 				) );
-				//ground.rotation.x = - Math.PI / 2;
+				ground.rotation.x = - Math.PI / 2;
 				ground.receiveShadow = true;
 				scene.add( ground );
 
