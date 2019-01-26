@@ -166,6 +166,7 @@
 				var z = camera.position.x*0.0015 + camera.position.z*0.99999987;
 				camera.position.x = x;
 				camera.position.z = z;
+				camera.position.y = Math.max(camera.position.y, 0);
 				camera.lookAt( cameraTarget );
 				renderer.render( scene, camera );
 			}
