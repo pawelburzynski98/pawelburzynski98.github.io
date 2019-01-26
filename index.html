@@ -65,7 +65,7 @@
 		//		scene.add( new THREE.AmbientLight( 0x999999 ) );
 				camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 0.1, 2000 );
 				// Z is up for objects intended to be 3D printed.
-				camera.position.set( 10, 4, -6 );
+				camera.position.set( 3, 4, -15 );
 
 				camera.add( new THREE.PointLight( 0xffffff, 0.8 ) );
 
@@ -162,8 +162,8 @@
 			}
 			function render() {
 				var timer = Date.now() * 0.0002;
-				var x = camera.position.x*Math.cos(0.0015) - camera.position.z*Math.sin(0.0005);
-				var z = camera.position.x*Math.sin(0.0015) + camera.position.z*Math.cos(0.0005);
+				var x = camera.position.x*0.9999988 - camera.position.z*0.0005;
+				var z = camera.position.x*0.0015 + camera.position.z*0.99999987;
 				camera.position.x = x;
 				camera.position.z = z;
 				camera.lookAt( cameraTarget );
