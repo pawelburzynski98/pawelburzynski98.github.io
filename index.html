@@ -115,13 +115,7 @@
 				shadowLight.shadow.bias = -0.025;
 
 				lightHolder.add( shadowLight, shadowLight.target );
-				
-			var loader = new THREE.GLTFLoader();
-				loader.load( 'printer_whole.glb', function ( gltf ) {
-					scene.add( gltf.scene );
-				}, undefined, function ( e ) {
-					console.error( e );
-				} );
+				initPrinter()
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -143,7 +137,27 @@
 				} );
 
 			}
-
+			function initPrinter() {
+				var loader = new THREE.GLTFLoader();
+				loader.setDRACOLoader( new THREE.DRACOLoader() );
+				loader.load( 'printer.glb', function( gltf ) {
+					printer = gltf.scene;
+					printer.traverse( function ( child ) {
+						if ( child.isMesh  ) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.material.envMap = envMap;
+						}
+					} );
+					scene.add( printer );
+					// car parts for material selection
+					var material_bottom; 
+					material_bottom = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMap, metalness: 0.9, roughness: 0.5, name: 'black' } )
+					var bottom;
+					bottom = printer.getObjectByName( 'printer' );
+					bottom.material = material_bottom;
+				});
+			}
 		
 
 			function onWindowResize() {
