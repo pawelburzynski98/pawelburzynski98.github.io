@@ -59,10 +59,11 @@
 			var origin = new THREE.Vector3();
 
 			function init() {
-
+				
+				scene = new THREE.Scene();
 				var container = document.getElementById( 'container' );
 
-		//		scene.add( new THREE.AmbientLight( 0x999999 ) );
+				scene.add( new THREE.AmbientLight( 0xFFFFFF ) );
 				camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 0.1, 2000 );
 				// Z is up for objects intended to be 3D printed.
 				camera.position.set( 3, 4, -15 );
@@ -74,9 +75,6 @@
 				controls = new THREE.OrbitControls( camera );
 				controls.target.set( 0, -2, 0 );
 				controls.update();
-
-				scene = new THREE.Scene();
-				scene.fog = new THREE.Fog( 0xd7cbb1, 1, 80 );
 
 				envMap = new THREE.CubeTextureLoader()
 					.setPath( 'skyboxsun25deg/')
@@ -100,7 +98,7 @@
 				var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xd7cbb1, 1.4 );
 				hemiLight.position.set( 8.1, 8.1, 8.1 );
 				scene.add( hemiLight );
-			//	scene.add( new THREE.HemisphereLight( 0x443333, 0x111122 ) );
+				scene.add( new THREE.HemisphereLight( 0x443333, 0x111122 ) );
 
 				var shadowLight  = new THREE.DirectionalLight( 0xffffee, 0.1 );
 				shadowLight.position.set( 8.1, 8.1, -8.1 );
@@ -150,12 +148,7 @@
 						}
 					} );
 					scene.add( printer );
-					// car parts for material selection
-					var material_bottom; 
-					material_bottom = new THREE.MeshStandardMaterial( { color: 0x000000, envMap: envMap, metalness: 0.9, roughness: 0.5, name: 'black' } )
-					var bottom;
-					bottom = printer.getObjectByName( 'printer' );
-					bottom.material = material_bottom;
+			
 				});
 			}
 		
@@ -175,11 +168,10 @@
 				stats.update();
 			}
 			function render() {
-				var timer = Date.now() * 0.0002;
 				var x = camera.position.x*0.9999988 - camera.position.z*0.0005;
 				var z = camera.position.x*0.0015 + camera.position.z*0.99999987;
-				camera.position.x = x;
-				camera.position.z = z;
+			//	camera.position.x = x;
+			//	camera.position.z = z;
 				camera.position.y = Math.max(camera.position.y, 0);
 				camera.lookAt( cameraTarget );
 				renderer.render( scene, camera );
