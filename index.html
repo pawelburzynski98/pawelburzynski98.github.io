@@ -157,13 +157,13 @@
 
 			function render() {
 				
-				var x = camera.position.x - camera.position.z*0.0025;
-				var z = camera.position.x*0.0013 + camera.position.z;
-				camera.position.x = x;
-				camera.position.z = z;
-				camera.position.y = Math.max(camera.position.y, 0);
+				//var x = camera.position.x - camera.position.z*0.0025;
+				//var z = camera.position.x*0.0013 + camera.position.z;
+				//camera.position.x = x;
+				//camera.position.z = z;
+				camera.position.y = Math.max(camera.position.y, 0.01);
 					
-				
+				controls.update();
 				renderer.render( scene, camera );
 
 			}
