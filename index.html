@@ -112,10 +112,10 @@
 				mesh.receiveShadow = true;
 				scene.add( mesh );
 				
-				var grid = new THREE.GridHelper( 30, 30, 0x000000, 0x000000 );
-				grid.material.depthWrite = false;
-				grid.material.transparent = true;
-				scene.add( grid );
+				
+				
+				
+				
 
 				window.addEventListener( 'resize', onResize, false );
 				renderer.setAnimationLoop( function() {
@@ -163,7 +163,7 @@
 				camera.position.z = z;
 				camera.position.y = Math.max(camera.position.y, 0);
 					
-				controls.update();
+				
 				renderer.render( scene, camera );
 
 			}
