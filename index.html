@@ -100,14 +100,6 @@
 				light2.position.set(0.5, 0, 0.866); // ~60º
 				light2.name = 'main_light';
 				camera.add( light2 );
-				lightHelper = new THREE.SpotLightHelper( spotLight );
-				scene.add( lightHelper );
-				lightHelper2 = new THREE.HemisphereLightHelper( hemiLight,5);
-				scene.add( lightHelper2 );
-		//		shadowCameraHelper = new THREE.CameraHelper( spotLight.shadow.camera );
-		//		scene.add( shadowCameraHelper );
-
-				scene.add( new THREE.AxesHelper( 10 ) );
 				
 				envMap = new THREE.CubeTextureLoader()
 					.setPath( 'skyboxsun25deg/')
@@ -145,7 +137,6 @@
 							child.receiveShadow = true;
 							child.material.envMap = envMap;
 							child.material.envMapIntensity =  2.0;
-							child.material.metalness = 0.9;
 						}
 					} );
 					scene.add( printer );
@@ -168,13 +159,9 @@
 			}
 
 			function render() {
-
-				lightHelper.update();
-				lightHelper2.update();
-	//			shadowCameraHelper.update();
 				
-				var x = camera.position.x*Math.cos(0.0013) - camera.position.z*0.0025;
-				var z = camera.position.x*0.0013 + camera.position.z*Math.cos(0.0025);
+				var x = camera.position.x - camera.position.z*0.0025;
+				var z = camera.position.x*0.0013 + camera.position.z;
 				camera.position.x = x;
 				camera.position.z = z;
 				camera.position.y = Math.max(camera.position.y, 0);
