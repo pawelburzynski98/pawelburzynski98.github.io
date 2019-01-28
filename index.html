@@ -71,7 +71,7 @@
 				camera.lookAt( cameraTarget );
 
 				
-				var ambient = new THREE.AmbientLight( 0xffffff, 0.1 );
+				var ambient = new THREE.AmbientLight( 0xffffff, 0.8 );
 				scene.add( ambient );
 				
 				var hemiLight = new THREE.HemisphereLight( 0x7c849b, 0xd7cbb1, 0.5 );
@@ -91,15 +91,11 @@
 				spotLight.shadow.camera.near = 10;
 				spotLight.shadow.camera.far = 200;
 				scene.add( spotLight );
-				
-				var light1  = new THREE.AmbientLight(0xFFFFFF, 0.3);
-				light1.name = 'ambient_light';
-				camera.add( light1 );
 
-				var light2  = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-				light2.position.set(0.5, 0, 0.866); // ~60º
-				light2.name = 'main_light';
-				camera.add( light2 );
+		//		var light2  = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+		//		light2.position.set(0.5, 0, 0.866); // ~60º
+		//		light2.name = 'main_light';
+		//		camera.add( light2 );
 				
 				envMap = new THREE.CubeTextureLoader()
 					.setPath( 'skyboxsun25deg/')
@@ -137,12 +133,13 @@
 							child.receiveShadow = true;
 							child.material.envMap = envMap;
 							child.material.envMapIntensity =  2.0;
+							
 						}
 					} );
 					scene.add( printer );
 			
 				});
-				scene.add(camera);
+			//	scene.add(camera);
 				controls = new THREE.OrbitControls( camera, renderer.domElement );
 				controls.target.set( 1, 2.5, 1.5 );
 				controls.update();
