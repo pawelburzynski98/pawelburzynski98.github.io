@@ -129,6 +129,7 @@
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
+							child.material = new THREE.MeshStandardMaterial( { color: 0xffffff, envMap: envMap, metalness: 0.9, roughness: 0.5, name: 'white' } );
 							child.castShadow = true;
 							child.receiveShadow = true;
 							child.material.envMap = envMap;
