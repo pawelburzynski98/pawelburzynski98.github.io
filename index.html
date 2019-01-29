@@ -123,7 +123,7 @@
 					render();
 
 				} );
-		/*		var loader = new THREE.GLTFLoader();
+				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
 				loader.load( 'printer.glb', function( gltf ) {
 					printer = gltf.scene;
@@ -139,7 +139,7 @@
 					} );
 					scene.add( printer );
 			
-				});*/
+				});
 			//	scene.add(camera);
 				controls = new THREE.OrbitControls( camera, renderer.domElement );
 				controls.target.set( 1, 2.5, 1.5 );
