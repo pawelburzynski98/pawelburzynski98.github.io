@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - morphtargets - MD2 controls</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -27,10 +26,9 @@
 	</head>
 
 	<body>
-		<div id="info">
-			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - spotlight by <a href="http://master-domain.com" target="_blank" rel="noopener">Master James</a><br />
-		</div>
 
+		<div id="info">
+		</div>
 
 		<script src="three.js"></script>
 		<script src="OrbitControls.js"></script>
@@ -39,6 +37,9 @@
 		<script src="GLTFLoader.js"></script>
 
 		<script src="WebGL.js"></script>
+		<script src="stats.min.js"></script>
+		<script src="HemisphereLightHelper.js"></script>
+		
 
 		<script>
 
@@ -48,35 +49,45 @@
 
 			}
 
-			var renderer, scene, camera, envmap, controls;
+			var container, stats, controls;
+			var camera, scene, renderer, light;
 
-			var spotLight, lightHelper, shadowCameraHelper,lightHelper2;
 			var cameraTarget = new THREE.Vector3(1,6,1.5);
 
 			function init() {
-				renderer = new THREE.WebGLRenderer();
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.shadowMap.enabled = true;
-				renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+				
+				
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
 
-				renderer.gammaInput = true;
-				renderer.gammaOutput = true;
-				document.body.appendChild( renderer.domElement );
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 20 );
+				camera.position.set( 0, 5, 8 );
+
+				controls = new THREE.OrbitControls( camera );
+				controls.target.set( 0, 0, 0 );
+				controls.update();
+				
+				envMap = new THREE.CubeTextureLoader()
+					.setPath( '4/')
+					.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+				
 				scene = new THREE.Scene();
-
-				camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.1, 2000 );
-				// Z is up for objects intended to be 3D printed.
-				camera.position.set( 8, 6, 6 );
-				camera.lookAt( cameraTarget );
-
+	//			scene.background = background;
+				scene.background = envMap;
 				
-				var ambient = new THREE.AmbientLight( 0xffffff, 0.8 );
-				scene.add( ambient );
+				var material = new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true } );
+
+				var geometry = new THREE.PlaneBufferGeometry( 200, 200 );
+
+				var mesh = new THREE.Mesh( geometry, material );
+				mesh.rotation.x = - Math.PI * 0.5;
+				mesh.position.y = -0.1;
+				mesh.receiveShadow = true;
+				scene.add( mesh );
 				
-				var hemiLight = new THREE.HemisphereLight( 0x7c849b, 0xd7cbb1, 0.5 );
-				hemiLight.position.set( 8, 8, 8 );
-				scene.add( hemiLight );
+				light = new THREE.HemisphereLight( 0xbbbbff, 0x444422 );
+				light.position.set( 1, 6, 1 );
+				scene.add( light );
 				
 				spotLight = new THREE.SpotLight( 0xffffff, 1 );
 				spotLight.position.set( 5, 10, 15 );
@@ -91,59 +102,35 @@
 				spotLight.shadow.camera.near = 10;
 				spotLight.shadow.camera.far = 200;
 				scene.add( spotLight );
+				
+				var lightHelper = new THREE.HemisphereLightHelper( light, 5 );
+				scene.add( lightHelper );
 
-		//		var light2  = new THREE.DirectionalLight(0xFFFFFF, 0.5);
-		//		light2.position.set(0.5, 0, 0.866); // ~60º
-		//		light2.name = 'main_light';
-		//		camera.add( light2 );
-				
-				envMap = new THREE.CubeTextureLoader()
-					.setPath( 'skyboxsun25deg/')
-					.load( [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ] );
-
-				scene.background = envMap;
-
-				var material = new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true } );
-
-				var geometry = new THREE.PlaneBufferGeometry( 2000, 2000 );
-
-				var mesh = new THREE.Mesh( geometry, material );
-				mesh.rotation.x = - Math.PI * 0.5;
-				mesh.receiveShadow = true;
-				scene.add( mesh );
-				
-				
-				
-				
-				
 
 				window.addEventListener( 'resize', onResize, false );
-				renderer.setAnimationLoop( function() {
-
-					render();
-
-				} );
+		//		renderer.setAnimationLoop( function() {	render();} );
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
 				loader.load( 'printer.glb', function( gltf ) {
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-							//child.material = new THREE.MeshStandardMaterial( { color: 0xffffff, envMap: envMap, metalness: 0.9, roughness: 0.5, name: 'white' } );
-							child.castShadow = true;
-							child.receiveShadow = true;
+
 							child.material.envMap = envMap;
-							child.material.envMapIntensity =  2.0;
-							
+							child.material.envMapIntensity =  0.5;
 						}
 					} );
 					scene.add( printer );
 			
 				});
-			//	scene.add(camera);
-				controls = new THREE.OrbitControls( camera, renderer.domElement );
-				controls.target.set( 1, 2.5, 1.5 );
-				controls.update();
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.gammaOutput = true;
+				container.appendChild( renderer.domElement );
+				
+				stats = new Stats();
+				container.appendChild( stats.dom );
 
 			}
 
@@ -156,22 +143,27 @@
 
 			}
 
-			function render() {
+			function animate() {
 				
-				//var x = camera.position.x - camera.position.z*0.0025;
-				//var z = camera.position.x*0.0013 + camera.position.z;
-				//camera.position.x = x;
-				//camera.position.z = z;
-				camera.position.y = Math.max(camera.position.y, 0.01);
+			//	var x = camera.position.x - camera.position.z*0.0025;
+			//	var z = camera.position.x*0.0013 + camera.position.z;
+			//	camera.position.x = x;
+			//	camera.position.z = z;
+			//	camera.position.y = Math.max(camera.position.y, 0);
+
 					
-				controls.update();
+				requestAnimationFrame( animate );
+
 				renderer.render( scene, camera );
+
+				stats.update();
+
 
 			}
 
 			init();
 
-			render();
+			animate();
 
 		</script>
 
