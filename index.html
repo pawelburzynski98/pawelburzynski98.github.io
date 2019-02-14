@@ -78,22 +78,22 @@
 				
 				
 				envMap = new THREE.CubeTextureLoader()
-					.setPath( '4/')
-					.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+					.setPath( 'skyboxsun25deg/')
+					.load( [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ] );
 				
 				scene = new THREE.Scene();
 	//			scene.background = background;
 				scene.background = envMap;
 				
-				var material = new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true } );
+		//		var material = new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true } );
 
-				var geometry = new THREE.PlaneBufferGeometry( 200, 200 );
+//				var geometry = new THREE.PlaneBufferGeometry( 200, 200 );
 
-				var mesh = new THREE.Mesh( geometry, material );
-				mesh.rotation.x = - Math.PI * 0.5;
-				mesh.position.y = -0.1;
-				mesh.receiveShadow = true;
-				scene.add( mesh );
+			//	var mesh = new THREE.Mesh( geometry, material );
+	//			mesh.rotation.x = - Math.PI * 0.5;
+		//		mesh.position.y = -0.1;
+		//		mesh.receiveShadow = true;
+		//		scene.add( mesh );
 				
 				light = new THREE.HemisphereLight( 0xbbbbff, 0x444422 );
 				light.position.set( 1, 6, 1 );
@@ -127,16 +127,15 @@
 							} );
 				var floorMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20, 20 ), floorMaterial );
 				floorMesh.rotation.x = - Math.PI * 0.5;
-				floorMesh.position.y = 0.1;
-				floorMesh.position.x += 5;
 				floorMesh.receiveShadow = true;
+				floorMesh.y = -0.5;
 				scene.add( floorMesh );
 
 				window.addEventListener( 'resize', onResize, false );
 		//		renderer.setAnimationLoop( function() {	render();} );
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
-				loader.load( 'printer.glb', function( gltf ) {
+				loader.load( 'drukarka5.glb', function( gltf ) {
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
@@ -145,8 +144,8 @@
 							child.material.envMapIntensity =  0.5;
 						}
 					} );
+					printer.z = 2;
 					scene.add( printer );
-			
 				});
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
