@@ -96,9 +96,9 @@
 				
 				scene.background = envMap;
 					
-				var spotLight1 = new THREE.SpotLight( 0xffffff, 2 );
-				var spotLight2 = new THREE.SpotLight( 0xffffff, 2 );
-				var spotLight3 = new THREE.SpotLight( 0xffffff, 2 );
+				var spotLight1 = new THREE.SpotLight( 0xffffff, 1 );
+				var spotLight2 = new THREE.SpotLight( 0xffffff, 1 );
+				var spotLight3 = new THREE.SpotLight( 0xffffff, 1 );
 
 				spotLight1.position.set( 5, 8, 6 );
 				spotLight2.position.set( 0, 8, 0 );
@@ -120,16 +120,16 @@
 				
 				var texture1 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_COL_1K_SPECULAR.jpg');
 				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 6, 6 );
+				texture1.repeat.set( 5, 5 );
 				var texture2 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_AO_1K_SPECULAR.jpg');
 				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 6, 6 );
+				texture1.repeat.set( 5, 5 );
 				var texture3 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_NRM_1K_SPECULAR.jpg');
 				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 6, 6 );
+				texture1.repeat.set( 5, 5 );
 				var texture4 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_GLOSS_1K_SPECULAR.jpg');
 				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 6, 6 );
+				texture1.repeat.set( 5, 5 );
 				var floorMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff,
 							map: texture1,
 							aoMap: texture2,
@@ -152,7 +152,7 @@
 						if ( child.isMesh  ) {
 
 							child.material.envMap = envMap2;
-							child.material.envMapIntensity = 0.2;
+							child.material.color.setHex( 0x000000 );
 						}
 					} );
 					scene.add( printer );
