@@ -146,13 +146,13 @@
 		//		renderer.setAnimationLoop( function() {	render();} );
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
-				loader.load( 'drukarka5.glb', function( gltf ) {
+				loader.load( 'drukarka6.glb', function( gltf ) {
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
 
-							child.material.envMap = envMap2;
-							child.material.color.setHex( 0x000000 );
+						//	child.material.envMap = envMap2;
+						//	child.material.color.setHex( 0x000000 );
 						}
 					} );
 					scene.add( printer );
