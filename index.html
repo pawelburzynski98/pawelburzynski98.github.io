@@ -26,7 +26,8 @@
 	</head>
 
 	<body>
-
+		
+		<div id="container"></div>
 		<div id="info">
 		</div>
 		
@@ -40,7 +41,6 @@
 
 		<script src="WebGL.js"></script>
 		<script src="stats.min.js"></script>
-		<script src="HemisphereLightHelper.js"></script>
 		
 
 		<script>
@@ -55,7 +55,7 @@
 			var camera, scene, renderer, light;
 
 			
-			var cameraTarget = new THREE.Vector3( 1.3, 2.5, 1.7 );
+			var cameraTarget = new THREE.Vector3( 0, 2.5, 0 );
 			var cameraPosInside = new THREE.Vector3( 1.3, 2.9, 2.5 );
 			var cameraPosRightOutside = new THREE.Vector3( 1.5, 2.5, 3.0 );
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
@@ -69,68 +69,69 @@
 			function init() {
 				
 				
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+				container = document.getElementById( 'container' );
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 20 );
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				container.appendChild( renderer.domElement );
+				
+				stats = new Stats();
+				container.appendChild( stats.dom );
+				
+				scene = new THREE.Scene();
+				
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 50 );
 				camera.position.set( 0, 5, 8 );
 
 				
 				
 				envMap = new THREE.CubeTextureLoader()
-					.setPath( 'skyboxsun25deg/')
-					.load( [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ] );
+					.setPath( '3/')
+					.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+				envMap2 = new THREE.CubeTextureLoader()
+					.load( [ 'white.png', 'white.png', 'white.png', 'white.png', 'white.png', 'white.png' ] );
 				
-				scene = new THREE.Scene();
-	//			scene.background = background;
 				scene.background = envMap;
-				
-		//		var material = new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true } );
+					
+				var spotLight1 = new THREE.SpotLight( 0xffffff, 2 );
+				var spotLight2 = new THREE.SpotLight( 0xffffff, 2 );
+				var spotLight3 = new THREE.SpotLight( 0xffffff, 2 );
 
-//				var geometry = new THREE.PlaneBufferGeometry( 200, 200 );
-
-			//	var mesh = new THREE.Mesh( geometry, material );
-	//			mesh.rotation.x = - Math.PI * 0.5;
-		//		mesh.position.y = -0.1;
-		//		mesh.receiveShadow = true;
-		//		scene.add( mesh );
+				spotLight1.position.set( 5, 8, 6 );
+				spotLight2.position.set( 0, 8, 0 );
+				spotLight3.position.set( - 5, 8, -6 );
 				
-				light = new THREE.HemisphereLight( 0xbbbbff, 0x444422 );
-				light.position.set( 1, 6, 1 );
-				scene.add( light );
+				scene.add( spotLight1, spotLight2, spotLight3 );
+				var lightHelper1 = new THREE.SpotLightHelper( spotLight1 );
+				var lightHelper2 = new THREE.SpotLightHelper( spotLight2 );
+				var lightHelper3 = new THREE.SpotLightHelper( spotLight3 );
 				
-				spotLight = new THREE.SpotLight( 0xffffff, 1 );
-				spotLight.position.set( 5, 10, 15 );
-				spotLight.angle = Math.PI / 4;
-				spotLight.penumbra = 0.05;
-				spotLight.decay = 2;
-				spotLight.distance = 200;
-
-				spotLight.castShadow = true;
-				spotLight.shadow.mapSize.width = 1024;
-				spotLight.shadow.mapSize.height = 1024;
-				spotLight.shadow.camera.near = 10;
-				spotLight.shadow.camera.far = 200;
-				scene.add( spotLight );
 				
-				var lightHelper = new THREE.HemisphereLightHelper( light, 5 );
-				scene.add( lightHelper );
+				scene.add( lightHelper1, lightHelper2, lightHelper3 );
 
+
+			//	scene.add(lightHelper);
+				
 
 				var floorTextureLoader = new THREE.TextureLoader();
+				floorTextureLoader.wrapS = THREE.RepeatWrapping;
+				floorTextureLoader.wrapT = THREE.RepeatWrapping;
+				floorTextureLoader.repeat.set( 4, 4 );
 				var floorMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff,
 							map: floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_COL_1K_SPECULAR.jpg'),
 							aoMap: floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_AO_1K_SPECULAR.jpg'),
-							displacementMap: floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_DISP_1K_SPECULAR.jpg'),
 							normalMap: floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_NRM_1K_SPECULAR.jpg'),
 							specularMap: floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_GLOSS_1K_SPECULAR.jpg'),
 							} );
 				var floorMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20, 20 ), floorMaterial );
 				floorMesh.rotation.x = - Math.PI * 0.5;
-				floorMesh.receiveShadow = true;
-				floorMesh.y = -0.5;
+				floorMesh.x = -0.5;
+				floorMesh.renderOrder = 1;
 				scene.add( floorMesh );
-
+				
 				window.addEventListener( 'resize', onResize, false );
 		//		renderer.setAnimationLoop( function() {	render();} );
 				var loader = new THREE.GLTFLoader();
@@ -140,30 +141,13 @@
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
 
-							child.material.envMap = envMap;
-							child.material.envMapIntensity =  0.5;
+							child.material.envMap = envMap2;
+							child.material.envMapIntensity = 0.2;
 						}
 					} );
-					printer.z = 2;
 					scene.add( printer );
 				});
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.gammaOutput = true;
-				container.appendChild( renderer.domElement );
 				
-				
-				controls = new THREE.OrbitControls( camera, renderer.domElement );
-				controls.target = cameraTarget.clone();
-				controls.enablePan = false;
-				controls.maxPolarAngle = Math.PI*0.55;
-				controls.minDistance = 3.5;
-				controls.maxDistance = 12;
-				controls.update();
-				
-				stats = new Stats();
-				container.appendChild( stats.dom );
 				
 				var button = document.getElementById('button');
 				button.addEventListener('click', function(event) {
@@ -190,6 +174,16 @@
 						controls.maxPolarAngle = Math.PI*0.55;
 					}
 				});
+				container.appendChild( renderer.domElement );
+				
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				controls.target = cameraTarget.clone();
+				controls.enablePan = false;
+				controls.maxPolarAngle = Math.PI*0.55;
+				controls.minDistance = 3.5;
+				controls.maxDistance = 12;
+				controls.update();
+
 
 			}
 
