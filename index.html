@@ -89,7 +89,7 @@
 				
 				
 				envMap = new THREE.CubeTextureLoader()
-					.setPath( '3/')
+					.setPath( 'cube/')
 					.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
 				envMap2 = new THREE.CubeTextureLoader()
 					.load( [ 'white.png', 'white.png', 'white.png', 'white.png', 'white.png', 'white.png' ] );
@@ -99,12 +99,14 @@
 				var spotLight1 = new THREE.SpotLight( 0xffffff, 1 );
 				var spotLight2 = new THREE.SpotLight( 0xffffff, 1 );
 				var spotLight3 = new THREE.SpotLight( 0xffffff, 1 );
+				var spotLight4 = new THREE.SpotLight( 0xffffff, 1 );
 
 				spotLight1.position.set( 5, 8, 6 );
-			//	spotLight2.position.set( 0, 8, 0 );
-				spotLight3.position.set( - 5, 8, -6 );
+				spotLight2.position.set( 5, 8, -6 );
+				spotLight3.position.set( - 5, 8, 6 );
+				spotLight4.position.set( -5, 8, -6 );
 				
-				scene.add( spotLight1, spotLight3 );
+				scene.add( spotLight1, spotLight2, spotLight3, spotLight4 );
 				var lightHelper1 = new THREE.SpotLightHelper( spotLight1 );
 			//	var lightHelper2 = new THREE.SpotLightHelper( spotLight2 );
 				var lightHelper3 = new THREE.SpotLightHelper( spotLight3 );
