@@ -146,7 +146,7 @@
 		//		renderer.setAnimationLoop( function() {	render();} );
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
-				loader.load( 'drukarka6.glb', function( gltf ) {
+				loader.load( 'Inntec.glb', function( gltf ) {
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
