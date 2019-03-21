@@ -29,9 +29,10 @@
 		
 		<div id="container"></div>
 		<div id="info">
+			<button id="button">BUTTON</button>
 		</div>
 		
-		<button id="button">BUTTON</button>
+	
 
 		<script src="three.js"></script>
 		<script src="OrbitControls.js"></script>
@@ -100,13 +101,17 @@
 				var spotLight2 = new THREE.SpotLight( 0xffffff, 0.7 );
 				var spotLight3 = new THREE.SpotLight( 0xffffff, 0.7 );
 				var spotLight4 = new THREE.SpotLight( 0xffffff, 0.7 );
+				var light = new THREE.PointLight( 0xffffff, 0.6);
 
 				spotLight1.position.set( 5, 8, 6 );
 				spotLight2.position.set( 5, 8, -6 );
 				spotLight3.position.set( - 5, 8, 6 );
 				spotLight4.position.set( -5, 8, -6 );
+				light.position.set(0.25,2.9,0.5);
+				scene.add( light, spotLight1, spotLight2, spotLight3, spotLight4 );
 				
-				scene.add( spotLight1, spotLight2, spotLight3, spotLight4 );
+				var pointLightHelper = new THREE.PointLightHelper( light, 0.3 );
+				scene.add( pointLightHelper );
 			//	var lightHelper1 = new THREE.SpotLightHelper( spotLight1 );
 			//	var lightHelper2 = new THREE.SpotLightHelper( spotLight2 );
 			//	var lightHelper3 = new THREE.SpotLightHelper( spotLight3 );
@@ -154,6 +159,7 @@
 						if ( child.isMesh  ) {
 
 							child.material.envMap = envMap2;
+							child.material.envMapIntensity = 0.05;
 						}
 					} );
 					scene.add( printer );
