@@ -96,17 +96,18 @@
 					.load( [ 'white.png', 'white.png', 'white.png', 'white.png', 'white.png', 'white.png' ] );
 				
 				scene.background = envMap;
-					
-				var spotLight1 = new THREE.SpotLight( 0xffffff, 0.7 );
-				var spotLight2 = new THREE.SpotLight( 0xffffff, 0.7 );
-				var spotLight3 = new THREE.SpotLight( 0xffffff, 0.7 );
-				var spotLight4 = new THREE.SpotLight( 0xffffff, 0.7 );
+				var ambient = new THREE.AmbientLight( 0x404040 ); // soft white light
+				scene.add( ambient );	
+				var spotLight1 = new THREE.PointLight( 0xffffff, 0.6 );
+				var spotLight2 = new THREE.PointLight( 0xffffff, 0.6 );
+				var spotLight3 = new THREE.PointLight( 0xffffff, 0.6 );
+				var spotLight4 = new THREE.PointLight( 0xffffff, 0.6 );
 				var light = new THREE.PointLight( 0xffffff, 0.6);
 
-				spotLight1.position.set( 5, 8, 6 );
-				spotLight2.position.set( 5, 8, -6 );
-				spotLight3.position.set( - 5, 8, 6 );
-				spotLight4.position.set( -5, 8, -6 );
+				spotLight1.position.set( 10, 7, 0 );
+				spotLight2.position.set( 0, 7, -10 );
+				spotLight3.position.set( -10, 7, 0 );
+				spotLight4.position.set( 0, 7, 10 );
 				light.position.set(0.25,2.9,0.5);
 				scene.add( light, spotLight1, spotLight2, spotLight3, spotLight4 );
 				
@@ -157,7 +158,7 @@
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-
+							child.receiveShadow = false;
 							child.material.envMap = envMap2;
 							child.material.envMapIntensity = 0.05;
 						}
