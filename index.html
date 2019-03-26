@@ -63,7 +63,8 @@
 			
 			var cameraTarget = new THREE.Vector3( 0.3, 2.6, 0.7 );
 			var cameraPosInside = new THREE.Vector3( 0.3, 2.6, 1.2 );
-			var cameraPosRightOutside = new THREE.Vector3( 0.3, 2.6, 2.0 );
+			var cameraPosRightOutside = new THREE.Vector3( 0.3, 2.6, 3.5 );
+			var cameraSidePos = new THREE.Vector3( 5.0, 2.6, 0.0 );
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
 			var cameraStartPos = new THREE.Vector3( 1.5, 4, 5 )
 			var isInside = false;
@@ -178,7 +179,7 @@
 				controls.target = cameraTarget.clone();
 				controls.enablePan = false;
 				controls.maxPolarAngle = Math.PI*0.55;
-				controls.minDistance = 3.5;
+				controls.minDistance = 4;
 				controls.maxDistance = 12;
 				controls.update();
 
@@ -198,6 +199,32 @@
 						cameraPosRightOutside,
 						cameraPrevPos
 						);
+						
+					if (camera.position.z < -0.5) 
+					{
+						/*
+						newCurve = new THREE.CurvePath();
+						newCurve.add( new THREE.LineCurve3(
+							cameraPosInside,
+							cameraPosRightOutside
+						));
+						newCurve.add( new THREE.QuadraticBezierCurve3(
+							cameraPosRightOutside,
+							cameraSidePos,
+							cameraPrevPos
+						));
+						curve = newCurve;
+						*/
+						cameraMidStop = cameraSidePos.clone();
+						if(camera.position.x < cameraTarget.x) cameraMidStop.x = 2*cameraTarget.x - cameraMidStop.x;
+						curve = new THREE.CubicBezierCurve3(
+							cameraPosInside,
+							cameraPosRightOutside,
+							cameraMidStop,
+							camera.position.clone()
+						);
+						
+					}
 				}
 				else
 				{
@@ -238,7 +265,7 @@
 					console.log(camPos.x+' '+camPos.y+' '+camPos.z);
 					console.log();
 					camera.position.set(camPos.x, camPos.y, camPos.z);
-					transitionT -= 0.005;
+					transitionT -= 0.01;
 					if(transitionT<0.0)
 					{
 						isInside = !isInside;
@@ -252,7 +279,7 @@
 						else
 						{
 							controls.enableZoom = true;
-							controls.minDistance = 3;
+							controls.minDistance = 4;
 							controls.maxDistance = 12;
 							document.getElementById("button").innerHTML = "Look inside!";
 						}
