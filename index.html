@@ -63,7 +63,7 @@
 			
 			var cameraTarget = new THREE.Vector3( 0.3, 2.6, 0.7 );
 			var cameraPosInside = new THREE.Vector3( 0.3, 2.6, 1.2 );
-			var cameraPosRightOutside = new THREE.Vector3( 0.3, 2.6, 3.5 );
+			var cameraPosRightOutside = new THREE.Vector3( 0.3, 4, 2.9 );
 			var cameraSidePos = new THREE.Vector3( 5.0, 2.6, 0.0 );
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
 			var cameraStartPos = new THREE.Vector3( 1.5, 4, 5 )
@@ -118,7 +118,7 @@
 				scene.add( light, spotLight1, spotLight2, spotLight3, spotLight4 );
 				
 				var pointLightHelper = new THREE.PointLightHelper( light, 0.3 );
-				scene.add( pointLightHelper );
+			//	scene.add( pointLightHelper );
 			//	var lightHelper1 = new THREE.SpotLightHelper( spotLight1 );
 			//	var lightHelper2 = new THREE.SpotLightHelper( spotLight2 );
 			//	var lightHelper3 = new THREE.SpotLightHelper( spotLight3 );
