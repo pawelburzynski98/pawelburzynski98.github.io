@@ -48,6 +48,8 @@
 		<script src="WebGL.js"></script>
 		<script src="stats.min.js"></script>
 		
+		<script src="STLLoader.js"></script>
+		<script src="Fire.js"></script>
 
 		<script>
 
@@ -71,7 +73,36 @@
 			var origin = new THREE.Vector3();
 			var curve;
 			var transitionT = 0, isTransition = false;
-
+			var movablePart = null;
+			
+			var laserMovement = new THREE.CurvePath();
+			
+			
+			
+			var clock = new THREE.Clock();
+			
+			
+				
+			var laserSpot;
+			
+			var particles;
+			
+			/*
+			Particle = function(position, velocity, mesh) 
+			{
+				this.position = position;
+				this.velocity = velocity;
+				
+				
+				
+				this.update = function(delta) 
+				{
+					this.position.addScaledVector(this.velocity, delta);
+				}
+				
+				
+			}
+			*/
 
 			function init() {
 				
@@ -172,6 +203,45 @@
 					scene.add( printer );
 				});
 				
+				var stlLoader = new THREE.STLLoader();
+				stlLoader.load( 'element_ruchomy.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0x333333, specular: 0x111111, shininess: 20 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( -0.19, 2.6705, 0.7 );
+					mesh.rotation.set( 0, 0, 0 );
+					mesh.scale.set( 0.75, 0.75, 0.75 );
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					movablePart = mesh;
+					scene.add( movablePart );
+				} );
+				
+				
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.15, 2.3, 0.75), new THREE.Vector3(0.15, 2.3, 0.8)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.15, 2.3, 0.8), new THREE.Vector3(0.2, 2.3, 0.8)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.2, 2.3, 0.8), new THREE.Vector3(0.2, 2.3, 0.75)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.2, 2.3, 0.75), new THREE.Vector3(0.15, 2.3, 0.75)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.15, 2.3, 0.75), new THREE.Vector3(0.2, 2.3, 0.8)));
+				
+				
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.45, 2.3, 0.55), new THREE.Vector3(0.45, 2.3, 0.5)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.45, 2.3, 0.5), new THREE.Vector3(0.4, 2.3, 0.5)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.4, 2.3, 0.5), new THREE.Vector3(0.4, 2.3, 0.55)));
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.4, 2.3, 0.55), new THREE.Vector3(0.45, 2.3, 0.55)));
+				
+				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.45, 2.3, 0.55), new THREE.Vector3(0.4, 2.3, 0.5)));
+				
+				
+				var bulbGeometry = new THREE.SphereBufferGeometry( 0.002, 16, 8 );
+				laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
+				bulbMat = new THREE.MeshStandardMaterial( {
+					emissive: 0xffff88,
+					emissiveIntensity: 1,
+					color: 0x000000
+				} );
+				laserSpot.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+				laserSpot.castShadow = false;
+				scene.add( laserSpot );
 				
 				container.appendChild( renderer.domElement );
 				
@@ -235,6 +305,11 @@
 						);
 					controls.maxPolarAngle = Math.PI*0.55;
 				}
+				
+				
+				
+				
+				
 			}
 
 			function onResize() {
@@ -265,7 +340,7 @@
 					console.log(camPos.x+' '+camPos.y+' '+camPos.z);
 					console.log();
 					camera.position.set(camPos.x, camPos.y, camPos.z);
-					transitionT -= 0.01;
+					transitionT -= clock.getDelta();
 					if(transitionT<0.0)
 					{
 						isInside = !isInside;
@@ -288,13 +363,38 @@
 					}
 					controls.update();
 				}
-					
+				
+				
+				
+				
+				t = clock.getElapsedTime();
+				t = 0.3*t-Math.floor(0.3*t);
+				if(t<0.6) {
+					laserPos = laserMovement.getPoint(t/0.6);
+					laserSpot.position.set(laserPos.x, laserPos.y, laserPos.z);
+					if(movablePart != null)
+					{
+						movablePart.position.z = 1.0;
+					}
+				}
+				else
+				{
+					laserSpot.position.set(0, 0, 0);
+					if(movablePart != null)
+					{
+						z = 0.3+4*Math.abs(t-0.8);
+						z = Math.min(1.0, Math.max(0.4, z));
+						movablePart.position.z = z;
+					}
+				
+				}
 					
 				requestAnimationFrame( animate );
 
 				renderer.render( scene, camera );
 
 				stats.update();
+
 
 
 			}
