@@ -108,13 +108,13 @@
 				var spotLight2 = new THREE.PointLight( 0xffffff, 0.5 );
 				var spotLight3 = new THREE.PointLight( 0xffffff, 0.5 );
 				var spotLight4 = new THREE.PointLight( 0xffffff, 0.5 );
-				var light = new THREE.PointLight( 0xffffff, 0.6);
+				var light = new THREE.PointLight( 0xffffff, 0.4);
 
 				spotLight1.position.set( 10, 9, 10 );
 				spotLight2.position.set( 10, 9, -10 );
 				spotLight3.position.set( -10, 9, 10 );
 				spotLight4.position.set( -10, 9, -10 );
-				light.position.set(0.25,2.9,0.5);
+				light.position.set(0.25,2.2,0.5);
 				scene.add( light, spotLight1, spotLight2, spotLight3, spotLight4 );
 				
 				var pointLightHelper = new THREE.PointLightHelper( light, 0.3 );
