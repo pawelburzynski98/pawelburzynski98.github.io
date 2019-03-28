@@ -63,8 +63,8 @@
 			var camera, scene, renderer, light;
 
 			
-			var cameraTarget = new THREE.Vector3( 0.3, 2.7, 0.6 );
-			var cameraPosInside = new THREE.Vector3( 0.3, 2.7, 1.0 );
+			var cameraTarget = new THREE.Vector3( 0.3, 2.5, 0.7 );
+			var cameraPosInside = new THREE.Vector3( 0.3, 2.9, 0.8 );
 			var cameraPosRightOutside = new THREE.Vector3( 0.3, 4.2, 2.9 );
 			var cameraSidePos = new THREE.Vector3( 5.0, 2.6, 0.0 );
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
@@ -74,6 +74,7 @@
 			var curve;
 			var transitionT = 0, isTransition = false;
 			var movablePart = null;
+			var szyba = null;
 			
 			var laserMovement = new THREE.CurvePath();
 			
@@ -206,15 +207,24 @@
 					stlLoader.load( 'element_ruchomy.stl', function ( geometry ) {
 						var material = new THREE.MeshPhongMaterial( { color: 0x333333, specular: 0x111111, shininess: 20 } );
 						var mesh = new THREE.Mesh( geometry, material );
-						mesh.rotation.set( Math.PI/2, Math.PI, 0 );
+						mesh.rotation.set( Math.PI/2,  Math.PI, 0 );
 						mesh.position.set( 0.945, 2.49, 0.7 );
 						mesh.castShadow = true;
 						mesh.receiveShadow = true;
 						movablePart = mesh;
 						scene.add( movablePart );
 					} );
+						var stlLoader2 = new THREE.STLLoader();
+					stlLoader2.load( 'szyba.stl', function ( geometry ) {
+						var material = new THREE.MeshStandardMaterial( { color: 0x92c913, metalness: 0.9, roughness: 0.1, opacity: 0.5, transparent: true, premultipliedAlpha: true } );
+						var mesh = new THREE.Mesh( geometry, material );
+						mesh.rotation.set( Math.PI/2, Math.PI, 0 );
+						mesh.position.set( 0.6, 0, 2.6 );
+						szyba = mesh;
+						scene.add( szyba );
+					} );	
+					
 				});
-				
 				
 				
 				
