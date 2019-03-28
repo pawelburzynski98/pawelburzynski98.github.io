@@ -35,38 +35,26 @@
 			<a id="button" onclick="goInside();">Look inside!</a>
 		</div>
 		
-		
-		
-	
-
 		<script src="three.js"></script>
-		<script src="OrbitControls.js"></script>
-	
+		<script src="OrbitControls.js"></script>	
 		<script src="DRACOLoader.js"></script>
 		<script src="GLTFLoader.js"></script>
-
 		<script src="WebGL.js"></script>
-		<script src="stats.min.js"></script>
-		
+		<script src="stats.min.js"></script>		
 		<script src="STLLoader.js"></script>
 		<script src="Fire.js"></script>
 
 		<script>
 
 			if ( WEBGL.isWebGLAvailable() === false ) {
-
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
-
 			}
 
 			var container, stats, controls;
 			var camera, scene, renderer, light;
-
-			
-
-			var cameraTarget = new THREE.Vector3( 0.3, 2.7, 0.6 );
-			var cameraPosInside = new THREE.Vector3( 0.3, 2.7, 0.95 );
-
+	
+			var cameraTarget = new THREE.Vector3( 0.3, 2.5, 0.7 );
+			var cameraPosInside = new THREE.Vector3( 0.3, 2.9, 0.8 );
 			var cameraPosRightOutside = new THREE.Vector3( 0.3, 4.2, 2.9 );
 			var cameraSidePos = new THREE.Vector3( 5.0, 2.6, 0.0 );
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
@@ -78,37 +66,12 @@
 			var movablePart = null;
 			var szyba = null;
 			
-			var laserMovement = new THREE.CurvePath();
-			
-			
-			
-			var clock = new THREE.Clock();
-			
-			
-				
-			var laserSpot;
-			
+			var laserMovement = new THREE.CurvePath();		
+			var clock = new THREE.Clock();			
+			var laserSpot;		
 			var particles;
 			
 			var curveClippingPlane = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0.0 );
-
-			
-			/*
-			Particle = function(position, velocity, mesh) 
-			{
-				this.position = position;
-				this.velocity = velocity;
-				
-				
-				
-				this.update = function(delta) 
-				{
-					this.position.addScaledVector(this.velocity, delta);
-				}
-				
-				
-			}
-			*/
 
 			function init() {
 				
@@ -130,9 +93,7 @@
 				
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 50 );
 				camera.position.set(0,4,8);
-
-				
-				
+	
 				envMap = new THREE.CubeTextureLoader()
 					.setPath( 'cube/')
 					.load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
@@ -156,18 +117,7 @@
 				scene.add( light, spotLight1, spotLight2, spotLight3, spotLight4 );
 				
 				var pointLightHelper = new THREE.PointLightHelper( light, 0.3 );
-			//	scene.add( pointLightHelper );
-			//	var lightHelper1 = new THREE.SpotLightHelper( spotLight1 );
-			//	var lightHelper2 = new THREE.SpotLightHelper( spotLight2 );
-			//	var lightHelper3 = new THREE.SpotLightHelper( spotLight3 );
-				
-				
-			//	scene.add( lightHelper1, lightHelper2, lightHelper3 );
-
-
-			//	scene.add(lightHelper);
-				
-
+		
 				var floorTextureLoader = new THREE.TextureLoader();
 				
 				var texture1 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_COL_1K_SPECULAR.jpg');
@@ -195,7 +145,6 @@
 				scene.add( floorMesh );
 				
 				window.addEventListener( 'resize', onResize, false );
-		//		renderer.setAnimationLoop( function() {	render();} );
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
 				loader.load( 'Inntec.glb', function( gltf ) {
@@ -230,9 +179,7 @@
 						scene.add( szyba );
 					} );	
 					
-				});
-				
-				
+				});		
 				
 				offset = new THREE.Vector3(0.10, 2.3, 0.5);
 				
@@ -247,9 +194,7 @@
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.05).add(offset), new THREE.Vector3(0.30, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
-				
-				
-				
+						
 				var bulbGeometry = new THREE.SphereBufferGeometry( 0.002, 16, 8 );
 				laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
 				bulbMat = new THREE.MeshStandardMaterial( {
@@ -270,8 +215,6 @@
 				controls.minDistance = 4;
 				controls.maxDistance = 12;
 				controls.update();
-
-
 			}
 			
 			function goInside() {
@@ -323,11 +266,7 @@
 						);
 					controls.maxPolarAngle = Math.PI*0.55;
 				}
-				
-				
-				
-				
-				
+					
 			}
 
 			function onResize() {
@@ -346,7 +285,6 @@
 			//	camera.position.x = x;
 			//	camera.position.z = z;
 			//	camera.position.y = Math.max(camera.position.y, 0);
-
 					
 				if(isTransition)
 				{
@@ -423,11 +361,9 @@
 					curveClippingPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, parity==1 ? 1 : -1),
 														new THREE.Vector3(0, 0, movablePart.position.z-0.2));
 				}
-				
-				
+							
 				removed = [];
-				
-				
+								
 				total = 100;
 				atMost = (Math.min(1.01, t/0.6));
 				len = laserMovement.getLength();
@@ -452,9 +388,7 @@
 					lenSoFar += localLen;
 					
 				}
-				
-				
-					
+								
 				requestAnimationFrame( animate );
 
 				renderer.render( scene, camera );
