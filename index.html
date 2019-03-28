@@ -53,8 +53,8 @@
 			var container, stats, controls;
 			var camera, scene, renderer, light;
 	
-			var cameraTarget = new THREE.Vector3( 0.3, 2.5, 0.7 );
-			var cameraPosInside = new THREE.Vector3( 0.3, 2.9, 0.8 );
+			var cameraTarget = new THREE.Vector3( 0.3, 2.8, 0.4 );
+			var cameraPosInside = new THREE.Vector3( 0.3, 2.9, 0.25 );
 			var cameraPosRightOutside = new THREE.Vector3( 0.3, 3.8, 3 );
 			var cameraSidePos = new THREE.Vector3( 5.0, 2.6, 0.0 );
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
@@ -209,7 +209,7 @@
 				controls.target = cameraTarget.clone();
 				controls.enablePan = false;
 				controls.maxPolarAngle = Math.PI*0.55;
-				controls.minDistance = 4;
+				controls.minDistance = 2.8;
 				controls.maxDistance = 12;
 				controls.update();
 			}
@@ -307,7 +307,7 @@
 						else
 						{
 							controls.enableZoom = true;
-							controls.minDistance = 4;
+							controls.minDistance = 2.8;
 							controls.maxDistance = 12;
 							document.getElementById("button").innerHTML = "Look inside!";
 						}
