@@ -169,7 +169,7 @@
 					} );
 						var stlLoader2 = new THREE.STLLoader();
 					stlLoader2.load( 'szyba.stl', function ( geometry ) {
-						var material = new THREE.MeshStandardMaterial( { color: 0x92c913, metalness: 0.9, roughness: 0.15, opacity: 0.8, transparent: true, premultipliedAlpha: true } );
+						var material = new THREE.MeshStandardMaterial( { color: 0x92c913, metalness: 0.9, roughness: 0.15, opacity: 0.5, transparent: true, premultipliedAlpha: true } );
 						var mesh = new THREE.Mesh( geometry, material );
 						mesh.rotation.set( Math.PI/2, Math.PI, 0 );
 						mesh.position.set( 0.6, 0, 2.6 );
