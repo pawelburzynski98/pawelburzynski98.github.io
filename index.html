@@ -138,12 +138,12 @@
 					position: new THREE.Vector3(),
 					positionRandomness: 0.0,
 					velocity: new THREE.Vector3(0,0.03,0),
-					velocityRandomness: 0.1,
+					velocityRandomness: 0.08,
 					color: 0xffff88,
 					colorRandomness: .2,
 					turbulence: 0.0,
 					lifetime: 0.1,
-					size: 30,
+					size: 10,
 					sizeRandomness: 1,
 					gravity: 0.0
 				};
@@ -241,7 +241,7 @@
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
 						
-				var bulbGeometry = new THREE.SphereBufferGeometry( 0.007, 16, 8 );
+				var bulbGeometry = new THREE.SphereBufferGeometry( 0.001, 16, 8 );
 				laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
 				bulbMat = new THREE.MeshStandardMaterial( {
 					emissive: 0xffff88,
