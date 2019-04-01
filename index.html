@@ -113,10 +113,10 @@
 				var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
 				
 
-				spotLight1.position.set( 30, 19, 30 );
-				spotLight2.position.set( 30, 19, -30 );
-				spotLight3.position.set( -30, 19, 30 );
-				spotLight4.position.set( -30, 19, -30 );
+				spotLight1.position.set( 20, 19, 0 );
+				spotLight2.position.set( 0, 19, -20 );
+				spotLight3.position.set( -20, 19, 0 );
+				spotLight4.position.set( 0, 19, 20 );
 				scene.add(  spotLight1, spotLight2, spotLight3, spotLight4 );
 				
 		//		var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
@@ -186,8 +186,8 @@
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
 						//	child.receiveShadow = false;
-					//		child.material.envMap = envMap2;
-					//		child.material.envMapIntensity = 0.01;
+							child.material.envMap = envMap2;
+							child.material.envMapIntensity = 0.05;
 						}
 					} );
 					scene.add( printer );
@@ -227,7 +227,7 @@
 					scene.add( flo );
 				});		
 				
-				offset = new THREE.Vector3(0.10, 2.3, 0.5);
+				offset = new THREE.Vector3(0.10, 2.31, 0.5);
 				
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.3).add(offset), new THREE.Vector3(0.05, 0.0, 0.35).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.35).add(offset), new THREE.Vector3(0.10, 0.0, 0.35).add(offset)));
