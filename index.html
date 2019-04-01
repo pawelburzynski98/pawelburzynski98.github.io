@@ -263,6 +263,7 @@
 			}
 			
 			function goInside() {
+				if(isTransition) return;
 				isTransition = true;
 				transitionT = 1.0;
 				if(!isInside)
@@ -416,7 +417,7 @@
 				removed = [];
 				
 				
-				total = 100;
+				total = 50;
 				atMost = (Math.min(1.01, t/0.6));
 				len = laserMovement.getLength();
 				lenSoFar = 0.0;
