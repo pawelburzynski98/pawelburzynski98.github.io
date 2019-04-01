@@ -66,6 +66,7 @@
 			var transitionT = 0, isTransition = false;
 			var movablePart = null;
 			var szyba = null;
+			var spotLight1, spotLight2, spotLight3, spotLight4;
 			
 			var laserMovement = new THREE.CurvePath();		
 			var clock = new THREE.Clock();			
@@ -102,49 +103,33 @@
 					.load( [ 'white.png', 'white.png', 'white.png', 'white.png', 'white.png', 'white.png' ] );
 				
 				scene.background = envMap;
-				var ambient = new THREE.AmbientLight( 0x404040 ); // soft white light
+
+				var ambient = new THREE.AmbientLight( 0xeeeeee, 0.7 ); // soft white light
 				scene.add( ambient );	
-				var spotLight1 = new THREE.PointLight( 0xffffff, 0.4 );
-				var spotLight2 = new THREE.PointLight( 0xffffff, 0.4 );
-				var spotLight3 = new THREE.PointLight( 0xffffff, 0.4 );
-				var spotLight4 = new THREE.PointLight( 0xffffff, 0.4 );
+				var spotLight1 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
+				var spotLight2 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
+				var spotLight3 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
+				var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
 				
-				spotLight1.decay = 2;
-				spotLight2.decay = 2;
-				spotLight3.decay = 2;
-				spotLight4.decay = 2;
-				
-				spotLight1.position.set( 10, 9, 10 );
-				spotLight2.position.set( 10, 9, -10 );
-				spotLight3.position.set( -10, 9, 10 );
-				spotLight4.position.set( -10, 9, -10 );
+
+				spotLight1.position.set( 30, 19, 30 );
+				spotLight2.position.set( 30, 19, -30 );
+				spotLight3.position.set( -30, 19, 30 );
+				spotLight4.position.set( -30, 19, -30 );
 				scene.add(  spotLight1, spotLight2, spotLight3, spotLight4 );
-		
-				var floorTextureLoader = new THREE.TextureLoader();
 				
-				var texture1 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_COL_1K_SPECULAR.jpg');
-				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 5, 5 );
-				var texture2 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_AO_1K_SPECULAR.jpg');
-				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 5, 5 );
-				var texture3 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_NRM_1K_SPECULAR.jpg');
-				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 5, 5 );
-				var texture4 = floorTextureLoader.load('MetalPanelRectangular001/SPECULAR/1K/MetalPanelRectangular001_GLOSS_1K_SPECULAR.jpg');
-				texture1.wrapS = texture1.wrapT = THREE.RepeatWrapping;
-				texture1.repeat.set( 5, 5 );
-				var floorMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff,
-							map: texture1,
-							aoMap: texture2,
-							normalMap: texture3,
-							specularMap: texture4,
-							} );
-				var floorMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20, 20 ), floorMaterial );
-				floorMesh.rotation.x = - Math.PI * 0.5;
-				floorMesh.x = -0.5;
-				floorMesh.renderOrder = 1;
-				scene.add( floorMesh );
+		//		var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
+	//			scene.add( pointLightHelper );
+		
+	//			pointLightHelper = new THREE.PointLightHelper( spotLight2, 2 );
+	//			scene.add( pointLightHelper );
+	//			
+//				pointLightHelper = new THREE.PointLightHelper( spotLight3, 2 );
+//				scene.add( pointLightHelper );
+
+//				pointLightHelper = new THREE.PointLightHelper( spotLight4, 2 );
+//				scene.add( pointLightHelper );
+				
 				
 				window.addEventListener( 'resize', onResize, false );
 				var loader = new THREE.GLTFLoader();
@@ -154,8 +139,8 @@
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
 						//	child.receiveShadow = false;
-							child.material.envMap = envMap2;
-							child.material.envMapIntensity = 0.05;
+					//		child.material.envMap = envMap2;
+					//		child.material.envMapIntensity = 0.01;
 						}
 					} );
 					scene.add( printer );
@@ -177,6 +162,19 @@
 						scene.add( szyba );
 					} );	
 					
+				});		
+				loader.load( 'floor.glb', function( gltf ) {
+					var flo = gltf.scene;
+					flo.traverse( function ( child ) {
+						if ( child.isMesh  ) {
+							child.receiveShadow = false;
+					//		child.material.envMap = envMap2;
+						//	child.material.envMapIntensity = 0.5;
+							child.material.metalness = 0.5;
+							child.material.roughness = 0.5;
+						}
+					} );
+					scene.add( flo );
 				});		
 				
 				offset = new THREE.Vector3(0.10, 2.3, 0.5);
