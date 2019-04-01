@@ -43,6 +43,7 @@
 		<script src="stats.min.js"></script>		
 		<script src="STLLoader.js"></script>
 		<script src="Fire.js"></script>
+		<script src="GPUParticleSystem.js"></script>
 
 		<script>
 
@@ -70,7 +71,7 @@
 			var laserMovement = new THREE.CurvePath();		
 			var clock = new THREE.Clock();			
 			var laserSpot;		
-			var particles;
+			var options, spawnerOptions, particleSystem;
 			
 			var curveClippingPlane = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0.0 );
 
@@ -146,6 +147,31 @@
 				floorMesh.renderOrder = 1;
 				scene.add( floorMesh );
 				
+				
+				
+				options = {
+					position: new THREE.Vector3(),
+					positionRandomness: 0.0,
+					velocity: new THREE.Vector3(0,0.03,0),
+					velocityRandomness: 0.1,
+					color: 0xffff88,
+					colorRandomness: .2,
+					turbulence: 0.0,
+					lifetime: 0.1,
+					size: 30,
+					sizeRandomness: 1,
+					gravity: 0.0
+				};
+
+				spawnerOptions = {
+					spawnRate: 0,
+					horizontalSpeed: 0.0,
+					verticalSpeed: 0.0,
+					timeScale: 1
+				};
+				
+				
+				
 				window.addEventListener( 'resize', onResize, false );
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
@@ -177,6 +203,8 @@
 						scene.add( szyba );
 					} );	
 					
+					spawnerOptions.spawnRate = 30000;
+					
 				});		
 				
 				offset = new THREE.Vector3(0.10, 2.3, 0.5);
@@ -193,7 +221,7 @@
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
 						
-				var bulbGeometry = new THREE.SphereBufferGeometry( 0.002, 16, 8 );
+				var bulbGeometry = new THREE.SphereBufferGeometry( 0.007, 16, 8 );
 				laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
 				bulbMat = new THREE.MeshStandardMaterial( {
 					emissive: 0xffff88,
@@ -204,6 +232,21 @@
 				laserSpot.castShadow = false;
 				scene.add( laserSpot );
 				
+				
+				
+				
+				
+				particleSystem = new THREE.GPUParticleSystem( {
+				maxParticles: 250000
+				} );
+
+				scene.add( particleSystem );
+
+				// options passed during each spawned
+
+
+				
+				
 				container.appendChild( renderer.domElement );
 				
 				controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -213,6 +256,7 @@
 				controls.minDistance = 2.8;
 				controls.maxDistance = 12;
 				controls.update();
+
 			}
 			
 			function goInside() {
@@ -323,7 +367,9 @@
 				
 				end1 = 0.67, end2 = 1.29;
 				
+				delta = clock.getDelta();
 				t = clock.getElapsedTime();
+				tick = t;
 				parity = Math.floor(0.3*t)%2;
 				t = 0.3*t-Math.floor(0.3*t);
 				if(t<0.6) {
@@ -360,20 +406,31 @@
 					curveClippingPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, parity==1 ? 1 : -1),
 														new THREE.Vector3(0, 0, movablePart.position.z-0.2));
 				}
-							
-				removed = [];
+				
+				
 
-				total = 50;
 				atMost = (Math.min(1.01, t/0.6));
 				len = laserMovement.getLength();
 				lenSoFar = 0.0;
+				
+				totalCurve = new THREE.Object3D();
+				
 				for(i=0; i<laserMovement.curves.length; ++i) {
 					
 					localLen = laserMovement.curves[i].getLength();
-					subCnt = Math.floor(total*localLen/len);
 					geometry = new THREE.Geometry();
-					geometry.vertices = laserMovement.curves[i].getSpacedPoints(subCnt).slice(0, Math.floor(Math.max(Math.min((subCnt+1), (subCnt+1)*((atMost*len-lenSoFar)/localLen)), 0.0)));
-				
+					
+					
+					if(atMost*len>lenSoFar+localLen) 
+					{
+						geometry.vertices = laserMovement.curves[i].getSpacedPoints(2);
+					}
+					else if(atMost*len>lenSoFar)
+					{
+						geometry.vertices = [];
+						geometry.vertices.push(laserMovement.curves[i].getPointAt(0.0));
+						geometry.vertices.push(laserMovement.curves[i].getPointAt((atMost*len-lenSoFar)/localLen));
+					}
 					//alert("subCnt = " + subCnt + " " + geometry.vertices.length + " "+ (atMost*len-lenSoFar));
 
 					printed = new THREE.Line(geometry, new THREE.LineBasicMaterial({
@@ -381,24 +438,42 @@
 						linewidth: 3,
 						clippingPlanes: [ curveClippingPlane ]
 					}));
-					scene.add(printed);
-					
-					removed.push(printed);
+					totalCurve.add(printed);
 					
 					lenSoFar += localLen;
 					
 				}
+				
+				scene.add(totalCurve);
+				
+				
+
+
+				options.position = laserSpot.position.clone();
+
+				for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
+
+					// Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
+					// their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
+
+					particleSystem.spawnParticle( options );
+
+				}
+
+				
+
+				particleSystem.update( tick );
+				
+				
+				
 								
 				requestAnimationFrame( animate );
 
 				renderer.render( scene, camera );
 
 				stats.update();
-
-				for(i=0; i<removed.length; ++i) 
-				{
-					scene.remove(removed[i]);
-				}
+				
+				scene.remove(totalCurve);
 
 			}
 
