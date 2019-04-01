@@ -391,38 +391,41 @@
 				}
 				
 				
+				end1 = 0.67, end2 = 1.29;
+					
+				t = 0.3*t-Math.floor(0.3*t);
+				if(t<0.6) {
+					laserPos = laserMovement.getPoint(t/0.6);
+					laserSpot.position.set(laserPos.x, laserPos.y, laserPos.z);
+					if(movablePart != null)
+					{
+						movablePart.position.z = parity==1 ? end1 : end2;
+					}
+				}
+				else
+				{
+					laserSpot.position.set(0, 0, 0);
+					if(movablePart != null)
+					{
+						z = 0.0;
+						if(parity==1)
+						{
+							z = end1-0.1+2*Math.abs(t-0.6);
+						}
+						else
+						{
+							z = end1-0.1+2*Math.abs(1.0-t);
+						}
+						z = Math.min(end2, Math.max(end1, z));
+						movablePart.position.z = z;
+					}
+				
+				}
+				
+				
 				if(isInside)
 				{
-					end1 = 0.67, end2 = 1.29;
 					
-					t = 0.3*t-Math.floor(0.3*t);
-					if(t<0.6) {
-						laserPos = laserMovement.getPoint(t/0.6);
-						laserSpot.position.set(laserPos.x, laserPos.y, laserPos.z);
-						if(movablePart != null)
-						{
-							movablePart.position.z = parity==1 ? end1 : end2;
-						}
-					}
-					else
-					{
-						laserSpot.position.set(0, 0, 0);
-						if(movablePart != null)
-						{
-							z = 0.0;
-							if(parity==1)
-							{
-								z = end1-0.1+2*Math.abs(t-0.6);
-							}
-							else
-							{
-								z = end1-0.1+2*Math.abs(1.0-t);
-							}
-							z = Math.min(end2, Math.max(end1, z));
-							movablePart.position.z = z;
-						}
-					
-					}
 					
 					
 					if(movablePart != null)
@@ -497,9 +500,9 @@
 					*/
 					
 
-					particleSystem.update( tick );
+					
 				}
-				
+				particleSystem.update( tick );
 				
 								
 				requestAnimationFrame( animate );
