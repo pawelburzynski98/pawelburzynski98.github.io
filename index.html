@@ -490,35 +490,37 @@
 					
 					
 
-					
-					options.position = laserSpot.position.clone();
-					sparkOptions.position = laserSpot.position.clone()/*cameraTarget.clone()*/;
-					velocity = new THREE.Vector3();
-					velocity.x = Math.random()-0.5;
-					velocity.y = 0.4;
-					velocity.z = Math.random()-0.5;
-					velocity.multiplyScalar(5);
-					
-					sparkOptions.position.addScaledVector(velocity, -0.7*delta);
-					//options2.position = laserSpot.position.clone();
-
-					for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
-
-						//particleSystem.spawnParticle( options );
-
-					}
-					
-					for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
-
-						sparkOptions.velocity = velocity;
-						particleSystem.spawnParticle( sparkOptions );
+					for(var j=0; j<2; ++j)
+					{
+						options.position = laserSpot.position.clone();
+						sparkOptions.position = laserSpot.position.clone()/*cameraTarget.clone()*/;
+						velocity = new THREE.Vector3();
+						velocity.x = Math.random()-0.5;
+						velocity.y = 0.2;
+						velocity.z = Math.random()-0.5;
+						velocity.multiplyScalar(5);
 						
-						d = 1.0/spawnerOptions.spawnRate;
-						
-						sparkOptions.position.addScaledVector(velocity, d);
-						velocity.y -= d*sparkOptions.gravity;
-						//particleSystem.update( tick-delta+x*(1.0/spawnerOptions.spawnRate));
+						sparkOptions.position.addScaledVector(velocity, -0.7*delta);
+						//options2.position = laserSpot.position.clone();
 
+						for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
+
+							//particleSystem.spawnParticle( options );
+
+						}
+						
+						for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
+
+							sparkOptions.velocity = velocity;
+							particleSystem.spawnParticle( sparkOptions );
+							
+							d = 1.0/spawnerOptions.spawnRate;
+							
+							sparkOptions.position.addScaledVector(velocity, d);
+							velocity.y -= d*sparkOptions.gravity;
+							//particleSystem.update( tick-delta+x*(1.0/spawnerOptions.spawnRate));
+
+						}
 					}
 					
 					particleSystem.update( tick );
