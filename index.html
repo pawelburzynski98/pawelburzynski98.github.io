@@ -72,7 +72,7 @@
 			var laserMovement = new THREE.CurvePath();		
 			var clock = new THREE.Clock();			
 			var laserSpot;		
-			var options, spawnerOptions, particleSystem;
+			var options, spawnerOptions, sparkOptions, particleSystem;
 			
 			var curveClippingPlane = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0.0 );
 
@@ -138,14 +138,28 @@
 					position: new THREE.Vector3(),
 					positionRandomness: 0.0,
 					velocity: new THREE.Vector3(0,0.03,0),
-					velocityRandomness: 0.08,
+					velocityRandomness: 0.8,
 					color: 0xffff88,
 					colorRandomness: .2,
 					turbulence: 0.0,
-					lifetime: 0.1,
-					size: 10,
+					lifetime: 0.05,
+					size: 15,
 					sizeRandomness: 1,
 					gravity: 0.0
+				};
+				
+				sparkOptions = {
+					position: new THREE.Vector3(),
+					positionRandomness: 0.0,
+					velocity: new THREE.Vector3(0,0.0,0),
+					velocityRandomness: 0.00,
+					color: 0xffff88,
+					colorRandomness: .2,
+					turbulence: 0.0,
+					lifetime: 0.5,
+					size: 15,
+					sizeRandomness: 1,
+					gravity: 2
 				};
 
 				spawnerOptions = {
@@ -241,7 +255,7 @@
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
 						
-				var bulbGeometry = new THREE.SphereBufferGeometry( 0.001, 16, 8 );
+				var bulbGeometry = new THREE.SphereBufferGeometry( 0.005, 16, 8 );
 				laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
 				bulbMat = new THREE.MeshStandardMaterial( {
 					emissive: 0xffff88,
@@ -322,6 +336,7 @@
 				}
 				else
 				{
+					particleSystem.visible = false;
 					curve = new THREE.QuadraticBezierCurve3(
 						cameraOutsidePos,
 						cameraPosRightOutside,
@@ -371,6 +386,7 @@
 						isTransition = false;
 						if(isInside)
 						{
+							particleSystem.visible = true;
 							controls.enableZoom = false;
 							controls.maxPolarAngle = Math.PI/2;
 							document.getElementById("button").innerHTML = "Go back outside";
@@ -473,34 +489,41 @@
 					
 					
 
-
+					
 					options.position = laserSpot.position.clone();
+					sparkOptions.position = laserSpot.position.clone()/*cameraTarget.clone()*/;
+					velocity = new THREE.Vector3();
+					velocity.x = Math.random()-0.5;
+					velocity.y = 0.4;
+					velocity.z = Math.random()-0.5;
+					velocity.multiplyScalar(5);
+					
+					sparkOptions.position.addScaledVector(velocity, -delta);
 					//options2.position = laserSpot.position.clone();
 
 					for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
-
-						// Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
-						// their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
 
 						particleSystem.spawnParticle( options );
 
 					}
 					
-					/*
-					for ( var x = 0; x < spawnerOptions2.spawnRate * delta; x ++ ) {
+					for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
 
-						// Yep, that's really it.	Spawning particles is super cheap, and once you spawn them, the rest of
-						// their lifecycle is handled entirely on the GPU, driven by a time uniform updated below
-
-						particleSystem.spawnParticle( options2 );
+						sparkOptions.velocity = velocity;
+						particleSystem.spawnParticle( sparkOptions );
+						
+						d = 1.0/spawnerOptions.spawnRate;
+						
+						sparkOptions.position.addScaledVector(velocity, d);
+						velocity.y -= d*sparkOptions.gravity;
+						//particleSystem.update( tick-delta+x*(1.0/spawnerOptions.spawnRate));
 
 					}
-					*/
 					
-
+					particleSystem.update( tick );
 					
+						
 				}
-				particleSystem.update( tick );
 				
 								
 				requestAnimationFrame( animate );

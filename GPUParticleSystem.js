@@ -74,28 +74,17 @@ THREE.GPUParticleSystem = function ( options ) {
 
 			'	gl_PointSize = ( uScale * size ) * lifeLeft;',
 
-			'	v.x = ( velocity.x - 0.5 ) * 3.0;',
-			'	v.y = ( velocity.y - 0.5 ) * 3.0;',
-			'	v.z = ( velocity.z - 0.5 ) * 3.0;',
+			'	v.x = ( velocity.x - 0.5 ) * 40.0;',
+			'	v.y = ( velocity.y - 0.5 ) * 40.0;',
+			'	v.z = ( velocity.z - 0.5 ) * 40.0;',
 
-			'	newPosition = positionStart + ( v * 10.0 ) * timeElapsed - vec3(0, 1, 0)*timeElapsed*timeElapsed*gravity;',
+			'	newPosition = positionStart + v * timeElapsed - 0.5 * gravity * timeElapsed * timeElapsed * vec3(0, 1, 0);',
 
 			'	vec3 noise = texture2D( tNoise, vec2( newPosition.x * 0.015 + ( uTime * 0.05 ), newPosition.y * 0.02 + ( uTime * 0.015 ) ) ).rgb;',
 			'	vec3 noiseVel = ( noise.rgb - 0.5 ) * 30.0;',
 
 			'	newPosition = mix( newPosition, newPosition + vec3( noiseVel * ( turbulence * 5.0 ) ), ( timeElapsed / lifeTime ) );',
 
-			'	if( v.y > 0. && v.y < .05 ) {',
-
-			'		lifeLeft = 0.0;',
-
-			'	}',
-
-			'	if( v.x < - 1.45 ) {',
-
-			'		lifeLeft = 0.0;',
-
-			'	}',
 
 			'	if( timeElapsed > 0.0 ) {',
 
@@ -290,10 +279,10 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 	this.particleShaderGeo.addAttribute( 'startTime', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
 	this.particleShaderGeo.addAttribute( 'velocity', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setDynamic( true ) );
 	this.particleShaderGeo.addAttribute( 'turbulence', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
+	this.particleShaderGeo.addAttribute( 'gravity', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
 	this.particleShaderGeo.addAttribute( 'color', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT * 3 ), 3 ).setDynamic( true ) );
 	this.particleShaderGeo.addAttribute( 'size', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
 	this.particleShaderGeo.addAttribute( 'lifeTime', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
-	this.particleShaderGeo.addAttribute( 'gravity', new THREE.BufferAttribute( new Float32Array( this.PARTICLE_COUNT ), 1 ).setDynamic( true ) );
 
 	// material
 
@@ -309,10 +298,10 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 		var startTimeAttribute = this.particleShaderGeo.getAttribute( 'startTime' );
 		var velocityAttribute = this.particleShaderGeo.getAttribute( 'velocity' );
 		var turbulenceAttribute = this.particleShaderGeo.getAttribute( 'turbulence' );
+		var gravityAttribute = this.particleShaderGeo.getAttribute( 'gravity' );
 		var colorAttribute = this.particleShaderGeo.getAttribute( 'color' );
 		var sizeAttribute = this.particleShaderGeo.getAttribute( 'size' );
 		var lifeTimeAttribute = this.particleShaderGeo.getAttribute( 'lifeTime' );
-		var gravityAttribute = this.particleShaderGeo.getAttribute( 'gravity' );
 
 		options = options || {};
 
@@ -326,11 +315,11 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 		var velocityRandomness = options.velocityRandomness !== undefined ? options.velocityRandomness : 0;
 		var colorRandomness = options.colorRandomness !== undefined ? options.colorRandomness : 1;
 		var turbulence = options.turbulence !== undefined ? options.turbulence : 1;
+		var gravity = options.gravity !== undefined ? options.gravity : 1;
 		var lifetime = options.lifetime !== undefined ? options.lifetime : 5;
 		var size = options.size !== undefined ? options.size : 10;
 		var sizeRandomness = options.sizeRandomness !== undefined ? options.sizeRandomness : 0;
 		var smoothPosition = options.smoothPosition !== undefined ? options.smoothPosition : false;
-		var gravity = options.gravity !== undefined ? options.gravity : 0.0;
 
 		if ( this.DPR !== undefined ) size *= this.DPR;
 
@@ -352,11 +341,9 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 
 		// velocity
 
-		var maxVel = 2;
+		var maxVel = 20;
 
-		var velX, velY, velZ;
-		
-		//M.Trela here, modified the generation system slightly.
+//M.Trela here, modified the generation system slightly.
 		while(true) 
 		{
 			velX = velocity.x + particleSystem.random() * velocityRandomness;
@@ -364,7 +351,7 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 			velZ = velocity.z + particleSystem.random() * velocityRandomness;
 			if(velocityRandomness == 0.0 || velocity.distanceTo(new THREE.Vector3(velX, velY, velZ))<=0.5*velocityRandomness) break;
 		}
-		
+
 		velX = THREE.Math.clamp( ( velX - ( - maxVel ) ) / ( maxVel - ( - maxVel ) ), 0, 1 );
 		velY = THREE.Math.clamp( ( velY - ( - maxVel ) ) / ( maxVel - ( - maxVel ) ), 0, 1 );
 		velZ = THREE.Math.clamp( ( velZ - ( - maxVel ) ) / ( maxVel - ( - maxVel ) ), 0, 1 );
@@ -386,11 +373,10 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 		// turbulence, size, lifetime and starttime
 
 		turbulenceAttribute.array[ i ] = turbulence;
+		gravityAttribute.array[ i ] = gravity;
 		sizeAttribute.array[ i ] = size + particleSystem.random() * sizeRandomness;
 		lifeTimeAttribute.array[ i ] = lifetime;
 		startTimeAttribute.array[ i ] = this.time + particleSystem.random() * 2e-2;
-		
-		gravityAttribute.array[i] = gravity;
 
 		// offset
 
@@ -442,10 +428,10 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 			var startTimeAttribute = this.particleShaderGeo.getAttribute( 'startTime' );
 			var velocityAttribute = this.particleShaderGeo.getAttribute( 'velocity' );
 			var turbulenceAttribute = this.particleShaderGeo.getAttribute( 'turbulence' );
+			var gravityAttribute = this.particleShaderGeo.getAttribute( 'gravity' );
 			var colorAttribute = this.particleShaderGeo.getAttribute( 'color' );
 			var sizeAttribute = this.particleShaderGeo.getAttribute( 'size' );
 			var lifeTimeAttribute = this.particleShaderGeo.getAttribute( 'lifeTime' );
-			var gravityAttribute = this.particleShaderGeo.getAttribute( 'gravity' );
 
 			if ( this.offset + this.count < this.PARTICLE_COUNT ) {
 
@@ -453,19 +439,19 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 				startTimeAttribute.updateRange.offset = this.offset * startTimeAttribute.itemSize;
 				velocityAttribute.updateRange.offset = this.offset * velocityAttribute.itemSize;
 				turbulenceAttribute.updateRange.offset = this.offset * turbulenceAttribute.itemSize;
+				gravityAttribute.updateRange.offset = this.offset * gravityAttribute.itemSize;
 				colorAttribute.updateRange.offset = this.offset * colorAttribute.itemSize;
 				sizeAttribute.updateRange.offset = this.offset * sizeAttribute.itemSize;
 				lifeTimeAttribute.updateRange.offset = this.offset * lifeTimeAttribute.itemSize;
-				gravityAttribute.updateRange.offset = this.offset * gravityAttribute.itemSize;
 
 				positionStartAttribute.updateRange.count = this.count * positionStartAttribute.itemSize;
 				startTimeAttribute.updateRange.count = this.count * startTimeAttribute.itemSize;
 				velocityAttribute.updateRange.count = this.count * velocityAttribute.itemSize;
 				turbulenceAttribute.updateRange.count = this.count * turbulenceAttribute.itemSize;
+				gravityAttribute.updateRange.count = this.count * gravityAttribute.itemSize;
 				colorAttribute.updateRange.count = this.count * colorAttribute.itemSize;
 				sizeAttribute.updateRange.count = this.count * sizeAttribute.itemSize;
 				lifeTimeAttribute.updateRange.count = this.count * lifeTimeAttribute.itemSize;
-				gravityAttribute.updateRange.count = this.count * gravityAttribute.itemSize;
 
 			} else {
 
@@ -473,20 +459,20 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 				startTimeAttribute.updateRange.offset = 0;
 				velocityAttribute.updateRange.offset = 0;
 				turbulenceAttribute.updateRange.offset = 0;
+				gravityAttribute.updateRange.offset = 0;
 				colorAttribute.updateRange.offset = 0;
 				sizeAttribute.updateRange.offset = 0;
 				lifeTimeAttribute.updateRange.offset = 0;
-				gravityAttribute.updateRange.offset = 0;
 
 				// Use -1 to update the entire buffer, see #11476
 				positionStartAttribute.updateRange.count = - 1;
 				startTimeAttribute.updateRange.count = - 1;
 				velocityAttribute.updateRange.count = - 1;
 				turbulenceAttribute.updateRange.count = - 1;
+				gravityAttribute.updateRange.count = - 1;
 				colorAttribute.updateRange.count = - 1;
 				sizeAttribute.updateRange.count = - 1;
 				lifeTimeAttribute.updateRange.count = - 1;
-				gravityAttribute.updateRange.count = - 1;
 
 			}
 
@@ -494,10 +480,10 @@ THREE.GPUParticleContainer = function ( maxParticles, particleSystem ) {
 			startTimeAttribute.needsUpdate = true;
 			velocityAttribute.needsUpdate = true;
 			turbulenceAttribute.needsUpdate = true;
+			gravityAttribute.needsUpdate = true;
 			colorAttribute.needsUpdate = true;
 			sizeAttribute.needsUpdate = true;
 			lifeTimeAttribute.needsUpdate = true;
-			gravityAttribute.needsUpdate = true;
 
 			this.offset = 0;
 			this.count = 0;
