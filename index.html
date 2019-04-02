@@ -156,10 +156,10 @@
 					color: 0xffff88,
 					colorRandomness: .2,
 					turbulence: 0.0,
-					lifetime: 0.5,
-					size: 5,
+					lifetime: 0.25,
+					size: 3,
 					sizeRandomness: 1,
-					gravity: 2
+					gravity: 8
 				};
 
 				spawnerOptions = {
@@ -496,9 +496,9 @@
 						sparkOptions.position = laserSpot.position.clone()/*cameraTarget.clone()*/;
 						velocity = new THREE.Vector3();
 						velocity.x = Math.random()-0.5;
-						velocity.y = 0.2;
+						velocity.y = 2;
 						velocity.z = Math.random()-0.5;
-						velocity.multiplyScalar(5);
+						velocity.multiplyScalar(1);
 						
 						sparkOptions.position.addScaledVector(velocity, -0.7*delta);
 						//options2.position = laserSpot.position.clone();
