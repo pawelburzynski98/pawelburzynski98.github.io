@@ -146,7 +146,7 @@
 		
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
-				loader.load( 'tacka0.glb', function( gltf ) {
+				loader.load( 'tacka.glb', function( gltf ) {
 					tacka0 = gltf.scene;
 					tacka0.traverse( function ( child ) {
 						if ( child.isMesh  ) {
