@@ -54,7 +54,7 @@
 			var container, stats, controls;
 			var camera, scene, renderer, light;
 	
-			var cameraTarget = new THREE.Vector3( 0.3, 2.7, 0.6 );
+			var cameraTarget = new THREE.Vector3( 0.2, 2.7, 0.4 );
 			var cameraPosInside = new THREE.Vector3( 0.3, 3.0, 0.6 );
 			var cameraPosRightOutside = new THREE.Vector3( 0.3, 2.9, 3 );
 			var cameraSidePos = new THREE.Vector3( 5.0, 2.6, 0.0 );
@@ -257,15 +257,16 @@
 					
 					
 				var bulbGeometry = new THREE.SphereBufferGeometry( 0.002, 16, 8 );
-				laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
-				bulbMat = new THREE.MeshStandardMaterial( {
-					emissive: 0xffffff,
-					emissiveIntensity: 1,
-					color: 0x000000
-				} );
-				laserSpot.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
-				laserSpot.castShadow = false;
-				scene.add( laserSpot );
+				laserSpot = new THREE.Vector3(0, 0, 0);
+		//		laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
+		//		bulbMat = new THREE.MeshStandardMaterial( {
+		//			emissive: 0xffffff,
+		//			emissiveIntensity: 1,
+		//			color: 0x000000
+		//		} );
+		//		laserSpot.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+		//		laserSpot.castShadow = false;
+		//		scene.add( laserSpot );
 				
 				
 				
@@ -411,7 +412,7 @@
 				t = 0.3*t-Math.floor(0.3*t);
 				if(t<0.6) {
 					laserPos = laserMovement.getPoint(t/0.6);
-					laserSpot.position.set(laserPos.x, laserPos.y, laserPos.z);
+					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
 					if(movablePart != null)
 					{
 						movablePart.position.z = parity==1 ? end1 : end2;
@@ -419,7 +420,7 @@
 				}
 				else
 				{
-					laserSpot.position.set(0, 0, 0);
+					laserSpot.set(0, 0, 0);
 					if(movablePart != null)
 					{
 						z = 0.0;
@@ -492,8 +493,8 @@
 
 					for(var j=0; j<2; ++j)
 					{
-						options.position = laserSpot.position.clone();
-						sparkOptions.position = laserSpot.position.clone()/*cameraTarget.clone()*/;
+						options.position = laserSpot.clone();
+						sparkOptions.position = laserSpot.clone()/*cameraTarget.clone()*/;
 						velocity = new THREE.Vector3();
 						velocity.x = Math.random()-0.5;
 						velocity.y = 2;
