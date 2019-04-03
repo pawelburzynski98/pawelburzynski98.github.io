@@ -108,6 +108,8 @@
 				light.shadow.camera.right = 120;
 				scene.add( light );
 
+		//		light = new THREE.AmbientLight( 0xffffff, 0.5);
+			//	scene.add(light);
 				var material = new THREE.LineBasicMaterial({
 					color: 0x222222,
 					linewidth: 1.5,
@@ -153,7 +155,7 @@
 							child.receiveShadow = false;
 							child.castShadow = false;
 							child.material.color.set(0x888888),
-							child.material.metalness = 0.6;
+							child.material.metalness = 0.7;
 							child.material.roughness = 0.7;
 						}
 					} );
