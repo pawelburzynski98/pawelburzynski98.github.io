@@ -92,6 +92,8 @@
 				camera.position.set( 50, 200, 280 );
 				controls = new THREE.OrbitControls( camera );
 				controls.target.set( 0, 0, 0 );
+				controls.minDistance = 50;
+				controls.maxDistance = 1000;
 				controls.update();
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x9f9fa9 );
