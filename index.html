@@ -232,10 +232,10 @@
 					flo.traverse( function ( child ) {
 						if ( child.isMesh  ) {
 							child.receiveShadow = false;
-							child.material.envMap = envMap;
+						//	child.material.envMap = envMap;
 						//	child.material.envMapIntensity = 0.5;
-						//	child.material.metalness = 0.5;
-						//	child.material.roughness = 0.5;
+							child.material.metalness = 0.2;
+							child.material.roughness = 0.8;
 						}
 					} );
 					scene.add( flo );
