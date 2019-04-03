@@ -105,12 +105,12 @@
 				
 				scene.background = envMap;
 
-				var ambient = new THREE.AmbientLight( 0xffffff, 0.6 ); // soft white light
+				var ambient = new THREE.AmbientLight( 0xffffff, 1 ); // soft white light
 				scene.add( ambient );	
-				var spotLight1 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
-				var spotLight2 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
-				var spotLight3 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
-				var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.2 );
+				var spotLight1 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
+				var spotLight2 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
+				var spotLight3 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
+				var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
 				
 
 				spotLight1.position.set( 20, 25, 0 );
@@ -234,8 +234,8 @@
 							child.receiveShadow = false;
 					//		child.material.envMap = envMap2;
 						//	child.material.envMapIntensity = 0.5;
-							child.material.metalness = 0.7;
-							child.material.roughness = 0.4;
+							child.material.metalness = 0.5;
+							child.material.roughness = 0.5;
 						}
 					} );
 					scene.add( flo );
