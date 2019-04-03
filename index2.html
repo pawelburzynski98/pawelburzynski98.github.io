@@ -21,9 +21,19 @@
 				z-index: 100;
 				display:block;
 			}
-			#info a {
-				color: #046;
-				font-weight: bold;
+			#buttons button {
+				  background-color: #444444;
+				  border: none;
+				  color: white;
+				  padding: 15px 32px;
+				  text-align: center;
+				  text-decoration: none;
+				  display: inline-block;
+				  font-size: 16px;
+				}
+			#buttons button:hover {
+						box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+				}
 			}
 		</style>
 	</head>
@@ -32,10 +42,27 @@
 		<div id="info">
 			
 		</div>
-
+		<div id="buttons", style = "position:absolute; 
+									width:200px; 
+									height:800px; 
+									left:1500px; 
+									top:200px;">
+				<button id="but1", class="button" style="color: red" onclick="NAPRAW();">NAPRAW</button>
+				<p></p>
+				<button id="but2", class="button" onclick="EDYTUJ();">EDYTUJ</button>
+				<p></p>
+				<button id="but3", class="button" onclick="PRZYGOTUJ();">PRZYGOTUJ</button>
+				<p></p>
+				<button id="but4", class="button" onclick="PODEPRZYJ();">PODEPRZYJ</button>
+				<p></p>
+				<button id="but5", class="button" onclick="ZAPAKUJ();">ZAPAKUJ</button>
+				<p></p>
+				<button id="but6", class="button" onclick="GENERUJ();">GENERUJ</button>
+		</div>
+		<div id="scene">
 		<script src="three.js"></script>
 
-	//	<script src="inflate.min.js"></script>
+		<script src="inflate.min.js"></script>
 		<script src="FBXLoader.js"></script>
 		<script src="STLLoader.js"></script>
 		<script src="OrbitControls.js"></script>
@@ -50,22 +77,24 @@
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
 			}
 			
-			var container, stats, controls, tacka;
-			var camera, scene, renderer, light;
+			var container, stats, controls;
+			var tacka0, tacka1, tacka2, tacka3, tacka4, tacka5;
+			var camera, scene, renderer, light, mixer;
 			var clock = new THREE.Clock();
 			var mixer;
+			var krok = 0;
 			init();
 			animate();
 			function init() {
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-				camera.position.set( 50, 350, 200 );
+				camera.position.set( 50, 200, 280 );
 				controls = new THREE.OrbitControls( camera );
 				controls.target.set( 0, 0, 0 );
 				controls.update();
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0x1f1f29 );
+				scene.background = new THREE.Color( 0x9f9fa9 );
 				light = new THREE.HemisphereLight( 0xffffff, 0x444444, 1 );
 				light.position.set( 0, 100, 0 );
 				scene.add( light );
@@ -79,68 +108,105 @@
 				light.shadow.camera.right = 120;
 				scene.add( light );
 
-				
-				var mesh = new THREE.Mesh( new THREE.CircleBufferGeometry(75, 7), new THREE.MeshPhongMaterial( { color: 0xcccccc, depthWrite: false } ) );
+				var material = new THREE.LineBasicMaterial({
+					color: 0x222222,
+					linewidth: 1.5,
+					opacity: 0.8,
+					transparent: true
+				});
+				var radius = 80;
+				var height = 120;
+				var mesh = new THREE.Mesh( new THREE.CircleBufferGeometry(radius, radius), new THREE.MeshPhongMaterial( 
+				{ 
+					color: 0xffffff, 
+					opacity: 0.8,
+					transparent: true
+				} ));
 				mesh.rotation.x = - Math.PI / 2;
 				mesh.receiveShadow = true;
 				scene.add( mesh );
-				var grid = new THREE.GridHelper( 150, 15, 0x000000, 0x000000 );
-				grid.material.opacity = 0.6;
-				grid.material.transparent = true;
-				scene.add( grid );
+				for(var j=1; j<radius/5; ++j) {
+					var geometry1 = new THREE.Geometry();
+					geometry1.vertices.push(
+						new THREE.Vector3( 10*j-radius, 0, -Math.sqrt(radius*radius-(10*j-radius)*(10*j-radius)) ),
+						new THREE.Vector3( 10*j-radius, 0,  Math.sqrt(radius*radius-(10*j-radius)*(10*j-radius)) )
+					);
+					var line1 = new THREE.Line(geometry1, material);
+					scene.add(line1);
+					var geometry2 = new THREE.Geometry();
+					geometry2.vertices.push(
+						new THREE.Vector3( -Math.sqrt(radius*radius-(10*j-radius)*(10*j-radius)), 0, 10*j-radius ),
+						new THREE.Vector3(  Math.sqrt(radius*radius-(10*j-radius)*(10*j-radius)), 0, 10*j-radius )
+					);
+					var line2 = new THREE.Line(geometry2, material);
+					scene.add(line2);
+				}
+				
 				// model
 		
 				var loader = new THREE.GLTFLoader();
 				loader.setDRACOLoader( new THREE.DRACOLoader() );
-				loader.load( 'tacka.glb', function( gltf ) {
-					tacka = gltf.scene;
-					tacka.traverse( function ( child ) {
+				loader.load( 'tacka0.glb', function( gltf ) {
+					tacka0 = gltf.scene;
+					tacka0.traverse( function ( child ) {
 						if ( child.isMesh  ) {
 							child.receiveShadow = false;
 							child.castShadow = false;
-							child.material.metalness = 0.8;
+							child.material.color.set(0x888888),
+							child.material.metalness = 0.6;
+							child.material.roughness = 0.7;
 						}
 					} );
-					scene.add( tacka );
-
-					var circle1 = new THREE.EllipseCurve(
-						0,  0,            // ax, aY
-						150, 150         // xRadius, yRadius
-					);
-					var points = curve.getPoints( 100 );
-					var geometry1 = new THREE.BufferGeometry().setFromPoints( points )
-					
-					var geometry2 = new THREE.Geometry();
-					geometry2.vertices.push(
-						new THREE.Vector3( 75, 0, -75 ),
-						new THREE.Vector3( 75, 125, -75 ),
-						new THREE.Vector3( -75, 125, -75 ),
-						new THREE.Vector3( -75, 0, -75 )
-					);
-					
-					var geometry3 = new THREE.Geometry();
-					geometry3.vertices.push(
-						new THREE.Vector3( 75, 125, 75 ),
-						new THREE.Vector3( 75, 125, -75 ),
-						new THREE.Vector3( -75, 125, -75 ),
-						new THREE.Vector3( -75, 125, 75 )
-					);
-					
-					var material = new THREE.LineBasicMaterial({
-						color: 0xffffff,
-						linewidth: 1,
-						opacity: 0.6,
-						transparent: true
-					})
-					
-					var line1 = new THREE.Line(geometry1, material);
-					
-					var line2 = new THREE.Line(geometry2, material);
-					
-					var line3 = new THREE.Line(geometry3, material);
-					
-					scene.add(line1, line2, line3);
+					scene.add( tacka0 );
 				});
+				var shape = new THREE.EllipseCurve(
+					0,  0,            // ax, aY
+					radius, radius         // xRadius, yRadius
+				);
+				var points = shape.getPoints( 50 );
+				
+				var bottom = new THREE.BufferGeometry().setFromPoints( points );
+				bottom.rotateX(-Math.PI/2);
+				
+				var up = new THREE.BufferGeometry().setFromPoints( points );
+				up.rotateX(-Math.PI/2);
+				up.translate(0,height,0);
+				
+				var geometry1 = new THREE.Geometry();
+				geometry1.vertices.push(
+					new THREE.Vector3( radius, 0, 0 ),
+					new THREE.Vector3( radius, height, 0 )
+				);
+				
+				var geometry2 = new THREE.Geometry();
+				geometry2.vertices.push(
+					new THREE.Vector3( -radius, 0, 0 ),
+					new THREE.Vector3( -radius, height, 0 )
+				);
+				
+				var geometry3 = new THREE.Geometry();
+				geometry3.vertices.push(
+					new THREE.Vector3( 0, 0, radius),
+					new THREE.Vector3( 0, height, radius)
+				);
+				
+				var geometry4 = new THREE.Geometry();
+				geometry4.vertices.push(
+					new THREE.Vector3( 0, 0, -radius ),
+					new THREE.Vector3( 0, height, -radius )
+				);
+				
+				var line1 = new THREE.Line(geometry1, material);
+				var line2 = new THREE.Line(geometry2, material);
+				var line3 = new THREE.Line(geometry3, material);
+				var line4 = new THREE.Line(geometry4, material);
+				var circle1 = new THREE.Line(bottom, material);
+				var circle2 = new THREE.Line(up, material);
+				
+				
+				scene.add(circle1, circle2);
+				scene.add(line1, line2, line3, line4);
+				
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -159,10 +225,157 @@
 			//
 			function animate() {
 				requestAnimationFrame( animate );
+				var delta = clock.getDelta();
+				if ( mixer ) mixer.update( delta );
 				renderer.render( scene, camera );
 				stats.update();
 			}
+			
+			function NAPRAW() {
+				if( krok == 0) {
+					krok = 1;
+					document.getElementById("but1").style.color="white";
+					document.getElementById("but2").style.color="red";
+					loader = new THREE.GLTFLoader();
+					loader.setDRACOLoader( new THREE.DRACOLoader() );
+					loader.load( 'tacka1.glb', function( gltf ) {
+						tacka1 = gltf.scene;
+						tacka1.traverse( function ( child ) {
+							if ( child.isMesh  ) {
+								child.receiveShadow = false;
+								child.castShadow = false;
+								child.material.color.set(0x888888),
+								child.material.metalness = 0.6;
+								child.material.roughness = 0.7;
+							}
+						} );
+						scene.remove(tacka0);
+						scene.add(tacka1);
+					});
+					animate();
+				}
+				
+			}
+			function EDYTUJ() {
+				if( krok == 1) {
+					krok = 2;
+					document.getElementById("but2").style.color="white";
+					document.getElementById("but3").style.color="red";
+					loader = new THREE.GLTFLoader();
+					loader.setDRACOLoader( new THREE.DRACOLoader() );
+					loader.load( 'tacka2.glb', function( gltf ) {
+						tacka2 = gltf.scene;
+						tacka2.traverse( function ( child ) {
+							if ( child.isMesh  ) {
+								child.receiveShadow = false;
+								child.castShadow = false;
+								child.material.color.set(0x888888),
+								child.material.metalness = 0.6;
+								child.material.roughness = 0.7;
+							}
+						} );
+						scene.remove(tacka1);
+						scene.add(tacka2);
+					});
+					animate();
+				}
+			}
+			function PRZYGOTUJ() {
+				if( krok == 2) {
+					krok = 3;
+					document.getElementById("but3").style.color="white";
+					document.getElementById("but4").style.color="red";
+					loader = new THREE.GLTFLoader();
+					loader.setDRACOLoader( new THREE.DRACOLoader() );
+					loader.load( 'tacka3.glb', function( gltf ) {
+						tacka3 = gltf.scene;
+						tacka3.traverse( function ( child ) {
+							if ( child.isMesh  ) {
+								child.receiveShadow = false;
+								child.castShadow = false;
+								child.material.color.set(0x888888),
+								child.material.metalness = 0.6;
+								child.material.roughness = 0.7;
+							}
+						} );
+						scene.remove(tacka2);
+						scene.add(tacka3);
+					});
+					animate();
+				}
+			}
+			function PODEPRZYJ() {
+				if( krok == 3) {
+					krok = 4;
+					document.getElementById("but4").style.color="white";
+					document.getElementById("but5").style.color="red";
+					loader = new THREE.GLTFLoader();
+					loader.setDRACOLoader( new THREE.DRACOLoader() );
+					loader.load( 'tacka4.glb', function( gltf ) {
+						tacka4 = gltf.scene;
+						tacka4.traverse( function ( child ) {
+							if ( child.isMesh  ) {
+								child.receiveShadow = false;
+								child.castShadow = false;
+								child.material.color.set(0x888888),
+								child.material.metalness = 0.6;
+								child.material.roughness = 0.7;
+							}
+						} );
+						scene.remove(tacka3);
+						scene.add(tacka4);
+					});
+					animate();
+				}
+			}
+			function ZAPAKUJ() {
+				if( krok == 4) {
+					krok = 5;
+					document.getElementById("but5").style.color="white";
+					document.getElementById("but6").style.color="red";
+					loader = new THREE.GLTFLoader();
+					loader.setDRACOLoader( new THREE.DRACOLoader() );
+					loader.load( 'tacka5.glb', function( gltf ) {
+						tacka5 = gltf.scene;
+						tacka5.traverse( function ( child ) {
+							if ( child.isMesh  ) {
+								child.receiveShadow = false;
+								child.castShadow = false;
+								child.material.color.set(0x888888),
+								child.material.metalness = 0.6;
+								child.material.roughness = 0.7;
+							}
+						} );
+						scene.remove(tacka4);
+						scene.add(tacka5);
+					});
+					animate();
+				}
+			}
+			function GENERUJ() {
+				if( krok == 5) {
+					krok = 6;
+					document.getElementById("but6").style.color="white";
+					var loader2 = new THREE.FBXLoader();
+					loader2.load( 'Samba Dancing.fbx', function ( object ) {
+						mixer = new THREE.AnimationMixer( object );
+						var action = mixer.clipAction( object.animations[ 0 ] );
+						action.play();
+						object.traverse( function ( child ) {
+							if ( child.isMesh ) {
+								child.castShadow = true;
+								child.receiveShadow = true;
+							}
+						} );
+						object.scale.set(0.5, 0.5, 0.5);
+						scene.remove(tacka5);
+						scene.add( object );
+					} );
+						
+					animate();
+				}
+			}
 		</script>
-
+		</div>
 	</body>
 </html>
