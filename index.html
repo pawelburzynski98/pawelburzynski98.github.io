@@ -378,7 +378,7 @@
 					controls.enabled = false;
 					console.log(cameraPosInside.x+' '+cameraPosInside.y+' '+cameraPosInside.z);
 					//alert('Trying here '+transitionT);
-					camPos = curve.getPoint(transitionT);
+					camPos = curve.getPoint(transitionT>0.0 ? transitionT : 0.0);
 					//console.log('PrevPos:'+cameraPrevPos.x+' '+cameraPrevPos.y+' '+cameraPrevPos.z);
 					console.log(camPos.x+' '+camPos.y+' '+camPos.z);
 					console.log();
