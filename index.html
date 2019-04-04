@@ -511,7 +511,7 @@
 
 						}
 						
-						for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
+						for ( var x = 0; x < spawnerOptions.spawnRate/spawnerOptions.sparkRate ; x ++ ) {
 
 							sparkOptions.velocity = velocity;
 							particleSystem.spawnParticle( sparkOptions );
