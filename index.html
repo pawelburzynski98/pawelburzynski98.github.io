@@ -490,13 +490,13 @@
 					
 					scene.add(totalCurve);
 					
-					particleSystem.update( tick );
 					
 
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
 					{
 						options.position = laserSpot.clone();
 						sparkOptions.position = laserSpot.clone()/*cameraTarget.clone()*/;
+						sparkOptions.lifeTime = Math.max(0.25, 2*delta);
 						velocity = new THREE.Vector3();
 						velocity.x = Math.random()-0.5;
 						velocity.y = 2;
