@@ -490,6 +490,7 @@
 					
 					scene.add(totalCurve);
 					
+					particleSystem.update( tick );
 					
 
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
@@ -526,7 +527,6 @@
 						}
 					}
 					
-					particleSystem.update( tick );
 					
 						
 				}
