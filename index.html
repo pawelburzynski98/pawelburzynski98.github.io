@@ -105,25 +105,25 @@
 				
 				scene.background = envMap;
 
-				var ambient = new THREE.AmbientLight( 0xffffff, 1 ); // soft white light
+				var ambient = new THREE.AmbientLight( 0xffffff, 0.6 ); // soft white light
 				scene.add( ambient );	
-				var spotLight1 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
-				var spotLight2 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
-				var spotLight3 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
-				var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.3 );
+				var spotLight1 = new THREE.SpotLight( 0xffffff, 0.7 );
+				var spotLight2 = new THREE.SpotLight( 0xffffff, 0.7 );
+			//	var spotLight3 = new THREE.SpotLight( 0xaaaaaa, 0.35 );
+			//	var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.35 );
 				
 
-				spotLight1.position.set( 20, 25, 0 );
-				spotLight2.position.set( 0, 25, 20 );
-				spotLight3.position.set( -20, 25, 0 );
-				spotLight4.position.set( 0, 25, -20 );
-				scene.add(  spotLight1, spotLight2, spotLight3, spotLight4 );
+				spotLight1.position.set( 10, 8, 10 );
+				spotLight2.position.set( -10, 8, 10 );
+		//		spotLight3.position.set( -20, 25, 0 );
+		//		spotLight4.position.set( 0, 25, -20 );
+				scene.add(  spotLight1, spotLight2 );
 				
-		//		var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
-	//			scene.add( pointLightHelper );
+				var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
+				scene.add( pointLightHelper );
 		
-	//			pointLightHelper = new THREE.PointLightHelper( spotLight2, 2 );
-	//			scene.add( pointLightHelper );
+				pointLightHelper = new THREE.PointLightHelper( spotLight2, 2 );
+				scene.add( pointLightHelper );
 	//			
 //				pointLightHelper = new THREE.PointLightHelper( spotLight3, 2 );
 //				scene.add( pointLightHelper );
@@ -200,9 +200,10 @@
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-						//	child.receiveShadow = false;
-							child.material.envMap = envMap2;
-							child.material.envMapIntensity = 0.05;
+			//				child.castShadow = true;
+			//				child.receiveShadow = true;
+				//			child.material.envMap = envMap2;
+				//			child.material.envMapIntensity = 0.1;
 						}
 					} );
 					scene.add( printer );
@@ -216,7 +217,7 @@
 					} );
 						var stlLoader2 = new THREE.STLLoader();
 					stlLoader2.load( 'szyba.stl', function ( geometry ) {
-						var material = new THREE.MeshStandardMaterial( { color: 0x92c913, metalness: 0.2, roughness: 0.15, opacity: 0.5, transparent: true, premultipliedAlpha: true } );
+						var material = new THREE.MeshStandardMaterial( { color: 0x92c913, metalness: 0.4, roughness: 0.15, opacity: 0.6, transparent: true, premultipliedAlpha: true } );
 						var mesh = new THREE.Mesh( geometry, material );
 						mesh.rotation.set( Math.PI/2, Math.PI, 0 );
 						mesh.position.set( 0.6, 0, 2.6 );
@@ -232,11 +233,11 @@
 					var flo = gltf.scene;
 					flo.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-							child.receiveShadow = false;
+							child.receiveShadow = true;
 						//	child.material.envMap = envMap;
 						//	child.material.envMapIntensity = 0.5;
-							child.material.metalness = 0.2;
-							child.material.roughness = 0.8;
+							child.material.metalness = 0.3;
+							child.material.roughness = 0.6;
 						}
 					} );
 					scene.add( flo );
