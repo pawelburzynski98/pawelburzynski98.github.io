@@ -164,7 +164,7 @@
 
 				spawnerOptions = {
 					spawnRate: 0,
-					sparkRate: 30,
+					sparkRate: 1,
 					horizontalSpeed: 0.0,
 					verticalSpeed: 0.0,
 					timeScale: 1
@@ -511,12 +511,13 @@
 
 						}
 						
-						for ( var x = 0; x < spawnerOptions.spawnRate/spawnerOptions.sparkRate ; x ++ ) {
+						perSpark = spawnerOptions.spawnRate*delta / Math.ceil(spawnerOptions.sparkRate * delta)
+						for ( var x = 0; x < perSpark ; x ++ ) {
 
 							sparkOptions.velocity = velocity;
 							particleSystem.spawnParticle( sparkOptions );
 							
-							d = 1.0/spawnerOptions.spawnRate;
+							d = delta/perSpark;
 							
 							sparkOptions.position.addScaledVector(velocity, d);
 							velocity.y -= d*sparkOptions.gravity;
