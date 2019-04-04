@@ -373,6 +373,7 @@
 					
 				if(isTransition)
 				{
+					transitionT -= delta;
 					controls.enabled = false;
 					console.log(cameraPosInside.x+' '+cameraPosInside.y+' '+cameraPosInside.z);
 					//alert('Trying here '+transitionT);
@@ -381,7 +382,6 @@
 					console.log(camPos.x+' '+camPos.y+' '+camPos.z);
 					console.log();
 					camera.position.set(camPos.x, camPos.y, camPos.z);
-					transitionT -= delta;
 					if(transitionT<0.0)
 					{
 						isInside = !isInside;
