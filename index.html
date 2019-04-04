@@ -164,6 +164,7 @@
 
 				spawnerOptions = {
 					spawnRate: 0,
+					sparkRate: 80,
 					horizontalSpeed: 0.0,
 					verticalSpeed: 0.0,
 					timeScale: 1
@@ -491,7 +492,7 @@
 					
 					
 
-					for(var j=0; j<2; ++j)
+					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
 					{
 						options.position = laserSpot.clone();
 						sparkOptions.position = laserSpot.clone()/*cameraTarget.clone()*/;
