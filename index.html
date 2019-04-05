@@ -46,6 +46,18 @@
 		<script src="GPUParticleSystem.js"></script>
 
 		<script>
+			function loadFile(filePath) {
+			  var result = null;
+			  var xmlhttp = new XMLHttpRequest();
+			  xmlhttp.open("GET", filePath, false);
+			  xmlhttp.send();
+			  if (xmlhttp.status==200) {
+				result = xmlhttp.responseText;
+			  }
+			  return result;
+			}
+			
+			
 
 			if ( WEBGL.isWebGLAvailable() === false ) {
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
@@ -75,6 +87,11 @@
 			var options, spawnerOptions, sparkOptions, particleSystem;
 			
 			var curveClippingPlane = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0.0 );
+			
+			var printedCurve = new THREE.Object3D();
+			var currentSegment = 0;
+			var currentLength = 0.0;
+			//var lastLine = null;
 
 			function init() {
 				
@@ -233,8 +250,24 @@
 					scene.add( flo );
 				});		
 				
-				offset = new THREE.Vector3(0.10, 2.31, 0.5);
+				offset = new THREE.Vector3(0.30, 2.31, 0.7);
+				scale = 1.0/200000.0;
 				
+				str = loadFile("path.txt").split("\n");
+				
+				
+				for(i=0; i<str.length; ++i)
+				{
+					//alert("OK?");
+					coords = str[i].split(" ");
+					startPoint = new THREE.Vector3(parseFloat(coords[0]), 0.0, parseFloat(coords[1])).multiplyScalar(scale).add(offset);
+					endPoint = new THREE.Vector3(parseFloat(coords[2]), 0.0, parseFloat(coords[3])).multiplyScalar(scale).add(offset);
+					laserMovement.add(new THREE.LineCurve3(startPoint, endPoint));
+					
+				}
+				
+				
+				/*
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.3).add(offset), new THREE.Vector3(0.05, 0.0, 0.35).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.35).add(offset), new THREE.Vector3(0.10, 0.0, 0.35).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.10, 0.0, 0.35).add(offset), new THREE.Vector3(0.10, 0.0, 0.3).add(offset)));
@@ -246,7 +279,7 @@
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.05).add(offset), new THREE.Vector3(0.30, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.1).add(offset)));
 				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
-					
+				*/
 					
 				var bulbGeometry = new THREE.SphereBufferGeometry( 0.002, 16, 8 );
 				laserSpot = new THREE.Vector3(0, 0, 0);
@@ -260,6 +293,7 @@
 		//		laserSpot.castShadow = false;
 		//		scene.add( laserSpot );
 				
+				scene.add(printedCurve);
 				
 				
 				
@@ -444,43 +478,38 @@
 					
 					
 					
-					atMost = (Math.min(1.01, t/0.6));
+					atMost = (Math.min(1.0, t/0.6));
 					len = laserMovement.getLength();
-					lenSoFar = 0.0;
-					
-					totalCurve = new THREE.Object3D();
-					
-					for(i=0; i<laserMovement.curves.length; ++i) {
-						
-						localLen = laserMovement.curves[i].getLength();
-						geometry = new THREE.Geometry();
-						
-						
-						if(atMost*len>lenSoFar+localLen) 
-						{
-							geometry.vertices = laserMovement.curves[i].getSpacedPoints(2);
-						}
-						else if(atMost*len>lenSoFar)
-						{
-							geometry.vertices = [];
-							geometry.vertices.push(laserMovement.curves[i].getPointAt(0.0));
-							geometry.vertices.push(laserMovement.curves[i].getPointAt((atMost*len-lenSoFar)/localLen));
-						}
-						//alert("subCnt = " + subCnt + " " + geometry.vertices.length + " "+ (atMost*len-lenSoFar));
 
-						printed = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+					//alert("OK?");
+					/*
+					if(atMost*len < currentLength)
+					{
+						currentSegment = 0;
+						currentLength = 0.0;
+						printedCurve.children = [];
+					}
+					*/
+					/*
+					while(currentSegment < laserMovement.curves.length && currentLength < atMost*len)
+					{
+						segment = laserMovement.curves[currentSegment];
+						
+						var geometry = new THREE.Geometry();
+						geometry.vertices = segment.getSpacedPoints(2);
+						printedCurve.add(new THREE.Line(
+							geometry, 
+						new THREE.LineBasicMaterial({
 							color: 0x151515,
 							linewidth: 3,
 							clippingPlanes: [ curveClippingPlane ]
-						}));
-						totalCurve.add(printed);
+						})));
+
 						
-						lenSoFar += localLen;
-						
+						currentLength += segment.getLength();
+						currentSegment += 1;
 					}
-					
-					scene.add(totalCurve);
-					
+					*/
 					
 
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
@@ -529,10 +558,12 @@
 
 				stats.update();
 				
+				/*
 				if(isInside)
 				{
 					scene.remove(totalCurve);
 				}
+				*/
 
 			}
 
