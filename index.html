@@ -240,11 +240,11 @@
 					var flo = gltf.scene;
 					flo.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-							child.receiveShadow = true;
-						//	child.material.envMap = envMap;
-						//	child.material.envMapIntensity = 0.5;
+					//		child.receiveShadow = true;
+					//		child.material.envMap = envMap;
+					//		child.material.envMapIntensity = 0.1;
 							child.material.metalness = 0.3;
-							child.material.roughness = 0.6;
+							child.material.roughness = 0.7;
 						}
 					} );
 					scene.add( flo );
