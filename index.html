@@ -95,7 +95,7 @@
 				scene = new THREE.Scene();
 				
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 50 );
-				camera.position.set(0,4,8);
+				camera.position.set(3,2.5,9);
 	
 				envMap = new THREE.CubeTextureLoader()
 					.setPath( 'cube/')
@@ -107,30 +107,20 @@
 
 				var ambient = new THREE.AmbientLight( 0xffffff, 0.6 ); // soft white light
 				scene.add( ambient );	
-				var spotLight1 = new THREE.SpotLight( 0xffffff, 0.7 );
-				var spotLight2 = new THREE.SpotLight( 0xffffff, 0.7 );
-			//	var spotLight3 = new THREE.SpotLight( 0xaaaaaa, 0.35 );
-			//	var spotLight4 = new THREE.SpotLight( 0xaaaaaa, 0.35 );
+				var spotLight1 = new THREE.SpotLight( 0xffffff, 0.6 );
+				var spotLight2 = new THREE.SpotLight( 0xffffff, 0.6 );
 				
 
 				spotLight1.position.set( 10, 8, 10 );
 				spotLight2.position.set( -10, 8, 10 );
-		//		spotLight3.position.set( -20, 25, 0 );
-		//		spotLight4.position.set( 0, 25, -20 );
 				scene.add(  spotLight1, spotLight2 );
 				
-				var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
-				scene.add( pointLightHelper );
+//				var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
+//				scene.add( pointLightHelper );
 		
-				pointLightHelper = new THREE.PointLightHelper( spotLight2, 2 );
-				scene.add( pointLightHelper );
-	//			
-//				pointLightHelper = new THREE.PointLightHelper( spotLight3, 2 );
+//				pointLightHelper = new THREE.PointLightHelper( spotLight2, 2 );
 //				scene.add( pointLightHelper );
 
-//				pointLightHelper = new THREE.PointLightHelper( spotLight4, 2 );
-//				scene.add( pointLightHelper );
-				
 				
 				
 				
