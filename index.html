@@ -44,6 +44,7 @@
 		<script src="STLLoader.js"></script>
 		<script src="Fire.js"></script>
 		<script src="GPUParticleSystem.js"></script>
+		
 
 		<script>
 			function loadFile(filePath) {
@@ -91,7 +92,9 @@
 			var printedCurve = new THREE.Object3D();
 			var currentSegment = 0;
 			var currentLength = 0.0;
-			//var lastLine = null;
+			
+			var video, videoImage, videoImageContext, videoTexture;
+			var printing = false;
 
 			function init() {
 				
@@ -171,7 +174,7 @@
 
 				spawnerOptions = {
 					spawnRate: 0,
-					sparkRate: 1,
+					sparkRate: 60,
 					horizontalSpeed: 0.0,
 					verticalSpeed: 0.0,
 					timeScale: 1
@@ -232,7 +235,7 @@
 						scene.add( szyba );
 					} );	
 					
-					spawnerOptions.spawnRate = 5000;
+					spawnerOptions.spawnRate = 10000;
 					//spawnerOptions2.spawnRate = 300;
 					
 				});		
@@ -250,7 +253,7 @@
 					scene.add( flo );
 				});		
 				
-				offset = new THREE.Vector3(0.30, 2.31, 0.7);
+				offset = new THREE.Vector3(0.30, 2.31, 0.685);
 				scale = 1.0/200000.0;
 				
 				str = loadFile("path.txt").split("\n");
@@ -294,6 +297,48 @@
 		//		scene.add( laserSpot );
 				
 				scene.add(printedCurve);
+				
+				
+				video = document.createElement( 'video' );
+				// video.id = 'video';
+				// video.type = ' video/ogg; codecs="theora, vorbis" ';
+				video.src = "path.mp4";
+				video.preload = "metadata";
+				video.load(); // must call after setting/changing source
+				//video.play();
+				
+				// alternative method -- 
+				// create DIV in HTML:
+				// <video id="myVideo" autoplay style="display:none">
+				//		<source src="videos/sintel.ogv" type='video/ogg; codecs="theora, vorbis"'>
+				// </video>
+				// and set JS variable:
+				// video = document.getElementById( 'myVideo' );
+				
+				videoImage = document.createElement( 'canvas' );
+				videoImage.width = 1000;
+				videoImage.height = 1000;
+
+				videoImageContext = videoImage.getContext( '2d' );
+				// background color if no video present
+				videoImageContext.fillStyle = '#ff00000';
+				videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
+
+				videoTexture = new THREE.Texture( videoImage );
+				videoTexture.minFilter = THREE.LinearFilter;
+				videoTexture.magFilter = THREE.LinearFilter;
+				
+				var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
+				// the geometry on which the movie will be displayed;
+				// 		movie image will be scaled to fit these dimensions.
+				var movieGeometry = new THREE.PlaneGeometry( 0.4, 0.4, 1, 1 );
+				var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
+				
+				movieScreen.rotation.x = -Math.PI/2;
+				//movieScreen.rotation.y = Math.PI;
+				movieScreen.position.set(offset.x, offset.y, offset.z);
+				scene.add(movieScreen);
+				//video.currentTime = 5;
 				
 				
 				
@@ -395,7 +440,7 @@
 				delta = clock.getDelta();
 				t = clock.getElapsedTime();
 				tick = t;
-				tScale = 0.1;
+				tScale = 0.08;
 				parity = Math.floor(tScale*t)%2;
 					
 				if(isTransition)
@@ -439,15 +484,32 @@
 				t = tScale*t-Math.floor(tScale*t);
 				cutoff = 0.8;
 				if(t<cutoff) {
+					if(!printing)
+					{
+						video.currentTime = 0;
+						video.play();
+					}
+					if(video.paused)
+					{
+						video.currentTime = t/tScale;
+						video.play();
+					}
+					
 					laserPos = laserMovement.getPoint(t/cutoff);
 					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
 					if(movablePart != null)
 					{
 						movablePart.position.z = parity==1 ? end1 : end2;
 					}
+					printing = true;
 				}
 				else
 				{
+					if(printing)
+					{
+						video.currentTime = cutoff/tScale;
+						video.pause();
+					}
 					laserSpot.set(0, 0, 0);
 					if(movablePart != null)
 					{
@@ -463,8 +525,9 @@
 						z = Math.min(end2, Math.max(end1, z));
 						movablePart.position.z = z;
 					}
-				
+					printing = false;
 				}
+				
 				
 				
 				if(isInside)
@@ -551,6 +614,14 @@
 					
 					particleSystem.update( tick );
 						
+				}
+				
+				
+				if ( video.readyState === video.HAVE_ENOUGH_DATA ) 
+				{
+					videoImageContext.drawImage( video, 0, 0 );
+					if ( videoTexture ) 
+						videoTexture.needsUpdate = true;
 				}
 				
 								
