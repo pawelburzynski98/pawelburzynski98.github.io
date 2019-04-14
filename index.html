@@ -84,17 +84,11 @@
 			
 			var laserMovement = new THREE.CurvePath();		
 			var clock = new THREE.Clock();			
-			var laserSpot;		
+			var laserSpot = new THREE.Vector3(0, 0, 0);		
 			var options, spawnerOptions, sparkOptions, particleSystem;
 			
-			var curveClippingPlane = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0.0 );
-			
-			var printedCurve = new THREE.Object3D();
-			var currentSegment = 0;
-			var currentLength = 0.0;
-			
+
 			var video, videoImage, videoImageContext, videoTexture;
-			var printing = false;
 			var tick = 0;
 
 			function init() {
@@ -136,28 +130,7 @@
 				spotLight2.position.set( -10, 8, 10 );
 				scene.add(  spotLight1, spotLight2 );
 				
-//				var pointLightHelper = new THREE.PointLightHelper( spotLight1, 2 );
-//				scene.add( pointLightHelper );
-		
-//				pointLightHelper = new THREE.PointLightHelper( spotLight2, 2 );
-//				scene.add( pointLightHelper );
-
 				
-				
-				
-				options = {
-					position: new THREE.Vector3(),
-					positionRandomness: 0.0,
-					velocity: new THREE.Vector3(0,0.03,0),
-					velocityRandomness: 0.2,
-					color: 0xffff88,
-					colorRandomness: .2,
-					turbulence: 0.0,
-					lifetime: 0.05,
-					size: 15,
-					sizeRandomness: 1,
-					gravity: 0.0
-				};
 				
 				sparkOptions = {
 					position: new THREE.Vector3(),
@@ -174,34 +147,9 @@
 				};
 
 				spawnerOptions = {
-					spawnRate: 0,
 					sparkRate: 60,
-					horizontalSpeed: 0.0,
-					verticalSpeed: 0.0,
 					timeScale: 1
 				};
-				/*
-				options2 = {
-					position: new THREE.Vector3(),
-					positionRandomness: 0.0,
-					velocity: new THREE.Vector3(0,0.03,0),
-					velocityRandomness: 1,
-					color: 0xffff88,
-					colorRandomness: .2,
-					turbulence: 0.0,
-					lifetime: 0.1,
-					size: 30,
-					sizeRandomness: 1,
-					gravity: 1
-				};
-
-				spawnerOptions2 = {
-					spawnRate: 0,
-					horizontalSpeed: 0.0,
-					verticalSpeed: 0.0,
-					timeScale: 1
-				};
-				*/
 				
 				
 				window.addEventListener( 'resize', onResize, false );
@@ -211,10 +159,6 @@
 					printer = gltf.scene;
 					printer.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-			//				child.castShadow = true;
-			//				child.receiveShadow = true;
-				//			child.material.envMap = envMap2;
-				//			child.material.envMapIntensity = 0.1;
 						}
 					} );
 					scene.add( printer );
@@ -237,16 +181,12 @@
 					} );	
 					
 					spawnerOptions.spawnRate = 10000;
-					//spawnerOptions2.spawnRate = 300;
 					
 				});		
 				loader.load( 'floor.glb', function( gltf ) {
 					var flo = gltf.scene;
 					flo.traverse( function ( child ) {
 						if ( child.isMesh  ) {
-					//		child.receiveShadow = true;
-					//		child.material.envMap = envMap;
-					//		child.material.envMapIntensity = 0.1;
 							child.material.metalness = 0.3;
 							child.material.roughness = 0.7;
 						}
@@ -262,7 +202,6 @@
 				
 				for(i=0; i<str.length; ++i)
 				{
-					//alert("OK?");
 					coords = str[i].split(" ");
 					startPoint = new THREE.Vector3(parseFloat(coords[0]), 0.0, parseFloat(coords[1])).multiplyScalar(scale).add(offset);
 					endPoint = new THREE.Vector3(parseFloat(coords[2]), 0.0, parseFloat(coords[3])).multiplyScalar(scale).add(offset);
@@ -271,60 +210,22 @@
 				}
 				
 				
-				/*
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.3).add(offset), new THREE.Vector3(0.05, 0.0, 0.35).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.35).add(offset), new THREE.Vector3(0.10, 0.0, 0.35).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.10, 0.0, 0.35).add(offset), new THREE.Vector3(0.10, 0.0, 0.3).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.10, 0.0, 0.3).add(offset), new THREE.Vector3(0.05, 0.0, 0.3).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.05, 0.0, 0.3).add(offset), new THREE.Vector3(0.10, 0.0, 0.35).add(offset)));
-				
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.05).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.05).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.05).add(offset), new THREE.Vector3(0.30, 0.0, 0.1).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.30, 0.0, 0.1).add(offset), new THREE.Vector3(0.35, 0.0, 0.1).add(offset)));
-				laserMovement.add(new THREE.LineCurve3(new THREE.Vector3(0.35, 0.0, 0.1).add(offset), new THREE.Vector3(0.30, 0.0, 0.05).add(offset)));
-				*/
-					
-				var bulbGeometry = new THREE.SphereBufferGeometry( 0.002, 16, 8 );
-				laserSpot = new THREE.Vector3(0, 0, 0);
-		//		laserSpot = new THREE.PointLight( 0xffee88, 0.5, 0.5, 2 );
-		//		bulbMat = new THREE.MeshStandardMaterial( {
-		//			emissive: 0xffffff,
-		//			emissiveIntensity: 1,
-		//			color: 0x000000
-		//		} );
-		//		laserSpot.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
-		//		laserSpot.castShadow = false;
-		//		scene.add( laserSpot );
-				
-				scene.add(printedCurve);
 				
 				
 				video = document.createElement( 'video' );
-				// video.id = 'video';
-				// video.type = ' video/ogg; codecs="theora, vorbis" ';
 				video.src = "path.mp4";
 				video.autoplay = true;
 				video.loop = true;
 				video.preload = "metadata";
-				video.load(); // must call after setting/changing source
-				//video.play();
-				
-				// alternative method -- 
-				// create DIV in HTML:
-				// <video id="myVideo" autoplay style="display:none">
-				//		<source src="videos/sintel.ogv" type='video/ogg; codecs="theora, vorbis"'>
-				// </video>
-				// and set JS variable:
-				// video = document.getElementById( 'myVideo' );
+				video.load();
+
 				
 				videoImage = document.createElement( 'canvas' );
 				videoImage.width = 1000;
 				videoImage.height = 1000;
 
 				videoImageContext = videoImage.getContext( '2d' );
-				// background color if no video present
-				videoImageContext.fillStyle = '#ff00000';
+				videoImageContext.fillStyle = '#000000';
 				videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
 
 				videoTexture = new THREE.Texture( videoImage );
@@ -332,16 +233,12 @@
 				videoTexture.magFilter = THREE.LinearFilter;
 				
 				var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
-				// the geometry on which the movie will be displayed;
-				// 		movie image will be scaled to fit these dimensions.
 				var movieGeometry = new THREE.PlaneGeometry( 0.4, 0.4, 1, 1 );
 				var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
 				
 				movieScreen.rotation.x = -Math.PI/2;
-				//movieScreen.rotation.y = Math.PI;
 				movieScreen.position.set(offset.x, offset.y, offset.z);
 				scene.add(movieScreen);
-				//video.currentTime = 5;
 				
 				
 				
@@ -352,7 +249,6 @@
 
 				scene.add( particleSystem );
 
-				// options passed during each spawned
 
 
 				
@@ -377,7 +273,6 @@
 				{
 					controls.minDistance = 0;
 					cameraPrevPos = camera.position.clone();
-					//alert('Ok');
 					curve = new THREE.QuadraticBezierCurve3(
 						cameraPosInside,
 						cameraPosRightOutside,
@@ -386,19 +281,6 @@
 						
 					if (camera.position.z < -0.5) 
 					{
-						/*
-						newCurve = new THREE.CurvePath();
-						newCurve.add( new THREE.LineCurve3(
-							cameraPosInside,
-							cameraPosRightOutside
-						));
-						newCurve.add( new THREE.QuadraticBezierCurve3(
-							cameraPosRightOutside,
-							cameraSidePos,
-							cameraPrevPos
-						));
-						curve = newCurve;
-						*/
 						cameraMidStop = cameraSidePos.clone();
 						if(camera.position.x < cameraTarget.x) cameraMidStop.x = 2*cameraTarget.x - cameraMidStop.x;
 						curve = new THREE.CubicBezierCurve3(
@@ -434,14 +316,7 @@
 
 			function animate() {
 				
-			//	var x = camera.position.x - camera.position.z*0.0025;
-			//	var z = camera.position.x*0.0013 + camera.position.z;
-			//	camera.position.x = x;
-			//	camera.position.z = z;
-			//	camera.position.y = Math.max(camera.position.y, 0);
-					
 				delta = clock.getDelta();
-				t = clock.getElapsedTime();
 				
 				
 				vt = video.currentTime;
@@ -450,12 +325,7 @@
 				{
 					transitionT -= delta;
 					controls.enabled = false;
-					console.log(cameraPosInside.x+' '+cameraPosInside.y+' '+cameraPosInside.z);
-					//alert('Trying here '+transitionT);
 					camPos = curve.getPoint(transitionT>0.0 ? transitionT : 0.0);
-					//console.log('PrevPos:'+cameraPrevPos.x+' '+cameraPrevPos.y+' '+cameraPrevPos.z);
-					console.log(camPos.x+' '+camPos.y+' '+camPos.z);
-					console.log();
 					camera.position.set(camPos.x, camPos.y, camPos.z);
 					if(transitionT<0.0)
 					{
@@ -514,107 +384,15 @@
 					laserSpot.set(0, 0, 0);
 					video.play();
 				}
-				/*
-				t = tScale*t-Math.floor(tScale*t);
-				cutoff = 0.8;
-				if(t<cutoff) {
-					if(!printing)
-					{
-						video.currentTime = 0;
-						video.play();
-					}
-					if(video.paused)
-					{
-						video.currentTime = t/tScale;
-						video.play();
-					}
-					
-					laserPos = laserMovement.getPoint(t/cutoff);
-					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
-					if(movablePart != null)
-					{
-						movablePart.position.z = parity==1 ? end1 : end2;
-					}
-					printing = true;
-				}
-				else
-				{
-					if(printing)
-					{
-						video.currentTime = cutoff/tScale;
-						video.pause();
-					}
-					laserSpot.set(0, 0, 0);
-					if(movablePart != null)
-					{
-						z = 0.0;
-						if(parity==1)
-						{
-							z = end1-0.1+0.8*Math.abs(t-cutoff)/(1.0-cutoff);
-						}
-						else
-						{
-							z = end1-0.1+0.8*Math.abs(1.0-t)/(1.0-cutoff);
-						}
-						z = Math.min(end2, Math.max(end1, z));
-						movablePart.position.z = z;
-					}
-					printing = false;
-				}
-				*/
-				
 				
 				if(isInside)
 				{
 					
-					
-					/*
-					if(movablePart != null)
-					{
-						curveClippingPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, parity==1 ? 1 : -1),
-															new THREE.Vector3(0, 0, movablePart.position.z-0.2));
-					}
-					
-					
-					
-					atMost = (Math.min(1.0, t/cutoff));
-					len = laserMovement.getLength();
-					*/
-					//alert("OK?");
-					/*
-					if(atMost*len < currentLength)
-					{
-						currentSegment = 0;
-						currentLength = 0.0;
-						printedCurve.children = [];
-					}
-					*/
-					/*
-					while(currentSegment < laserMovement.curves.length && currentLength < atMost*len)
-					{
-						segment = laserMovement.curves[currentSegment];
-						
-						var geometry = new THREE.Geometry();
-						geometry.vertices = segment.getSpacedPoints(2);
-						printedCurve.add(new THREE.Line(
-							geometry, 
-						new THREE.LineBasicMaterial({
-							color: 0x151515,
-							linewidth: 3,
-							clippingPlanes: [ curveClippingPlane ]
-						})));
-
-						
-						currentLength += segment.getLength();
-						currentSegment += 1;
-					}
-					*/
 					if(delta>1/30.0) delta = 1/30.0;
 					tick += delta;
 					
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
 					{
-						options.position = laserSpot.clone();
 						sparkOptions.position = laserSpot.clone()/*cameraTarget.clone()*/;
 						sparkOptions.lifeTime = Math.max(0.25, 2*delta);
 						velocity = new THREE.Vector3();
