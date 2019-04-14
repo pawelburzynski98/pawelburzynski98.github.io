@@ -303,6 +303,8 @@
 				// video.id = 'video';
 				// video.type = ' video/ogg; codecs="theora, vorbis" ';
 				video.src = "path.mp4";
+				video.autoplay = true;
+				video.loop = true;
 				video.preload = "metadata";
 				video.load(); // must call after setting/changing source
 				//video.play();
@@ -440,8 +442,8 @@
 				delta = clock.getDelta();
 				t = clock.getElapsedTime();
 				tick = t;
-				tScale = 0.08;
-				parity = Math.floor(tScale*t)%2;
+				
+				vt = video.currentTime;
 					
 				if(isTransition)
 				{
@@ -479,8 +481,33 @@
 				}
 				
 				
-				end1 = 0.67, end2 = 1.29;
-					
+				end1 = 0.67;
+				end2 = end1+0.67;
+				
+				
+				if(vt<10)
+				{
+					laserPos = laserMovement.getPoint(vt/10.0);
+					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
+					if(movablePart != null) movablePart.position.z = end1;
+				}
+				else if(vt<12)
+				{
+					laserSpot.set(0, 0, 0);
+					if(movablePart != null) movablePart.position.z = (end1*(12-vt)+end2*(vt-10))/2.0;
+				}
+				else if(vt<22)
+				{
+					laserPos = laserMovement.getPoint((vt-12)/10.0);
+					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
+					if(movablePart != null) movablePart.position.z = end2;
+				}
+				else
+				{
+					laserSpot.set(0, 0, 0);
+					if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
+				}
+				/*
 				t = tScale*t-Math.floor(tScale*t);
 				cutoff = 0.8;
 				if(t<cutoff) {
@@ -527,14 +554,14 @@
 					}
 					printing = false;
 				}
-				
+				*/
 				
 				
 				if(isInside)
 				{
 					
 					
-					
+					/*
 					if(movablePart != null)
 					{
 						curveClippingPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, parity==1 ? 1 : -1),
@@ -545,7 +572,7 @@
 					
 					atMost = (Math.min(1.0, t/cutoff));
 					len = laserMovement.getLength();
-
+					*/
 					//alert("OK?");
 					/*
 					if(atMost*len < currentLength)
