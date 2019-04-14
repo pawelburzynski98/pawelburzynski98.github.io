@@ -95,6 +95,7 @@
 			
 			var video, videoImage, videoImageContext, videoTexture;
 			var printing = false;
+			var tick = 0;
 
 			function init() {
 				
@@ -441,7 +442,8 @@
 					
 				delta = clock.getDelta();
 				t = clock.getElapsedTime();
-				tick = t;
+				if(delta>1/30.0) delta = 1/30.0;
+				tick += delta;
 				
 				vt = video.currentTime;
 					
@@ -609,7 +611,7 @@
 					}
 					*/
 					
-
+					
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
 					{
 						options.position = laserSpot.clone();
