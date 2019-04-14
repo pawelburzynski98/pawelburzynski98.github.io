@@ -67,6 +67,7 @@
 			var container, stats, controls;
 			var camera, scene, renderer, light;
 	
+			//Variables for transitioning from inside to outside and vice versa
 			var cameraTarget = new THREE.Vector3( 0.35, 2.7, 0.8 );
 			var cameraPosInside = new THREE.Vector3( 0.35, 3.0, 1.0 );
 			var cameraPosRightOutside = new THREE.Vector3( 0.3, 2.9, 3 );
@@ -74,22 +75,78 @@
 			var cameraPrevPos = new THREE.Vector3(1.0, 1.0, 1.0);
 			var cameraStartPos = new THREE.Vector3( 1.5, 4, 5 );
 			var cameraOutsidePos = new THREE.Vector3( 2, 5, 6 );
-			var isInside = false;
-			var origin = new THREE.Vector3();
 			var curve;
 			var transitionT = 0, isTransition = false;
+			var isInside = false;
+			
 			var movablePart = null;
 			var szyba = null;
 			var spotLight1, spotLight2, spotLight3, spotLight4;
 			
 			var laserMovement = new THREE.CurvePath();		
 			var clock = new THREE.Clock();			
-			var laserSpot = new THREE.Vector3(0, 0, 0);		
-			var options, spawnerOptions, sparkOptions, particleSystem;
+			var laserSpot = new THREE.Vector3(0, 0, 0);	
+				
+			var spawnerOptions = {
+					sparkRate: 60,
+					timeScale: 1
+				};
+			var sparkOptions = {
+					position: new THREE.Vector3(),
+					positionRandomness: 0.0,
+					velocity: new THREE.Vector3(0,0.0,0),
+					velocityRandomness: 0.00,
+					color: 0xffff88,
+					colorRandomness: .2,
+					turbulence: 0.0,
+					lifetime: 0.25,
+					size: 3,
+					sizeRandomness: 1,
+					gravity: 8
+				};
+			var particleSystem;
 			
+			//For particle updates
+			var tick = 0;
 
 			var video, videoImage, videoImageContext, videoTexture;
-			var tick = 0;
+			
+			
+			
+			//Offset and scale for calculating the position of the laser spot
+			var offset = new THREE.Vector3(0.30, 2.31, 0.685);
+			var scale = 1.0/200000.0;
+			
+			
+			function loadVideo() {
+				video = document.createElement( 'video' );
+				video.src = "path.mp4";
+				video.autoplay = true;
+				video.loop = true;
+				video.preload = "metadata";
+				video.load();
+
+				
+				videoImage = document.createElement( 'canvas' );
+				videoImage.width = 1000;
+				videoImage.height = 1000;
+
+				videoImageContext = videoImage.getContext( '2d' );
+				videoImageContext.fillStyle = '#000000';
+				videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
+
+				videoTexture = new THREE.Texture( videoImage );
+				videoTexture.minFilter = THREE.LinearFilter;
+				videoTexture.magFilter = THREE.LinearFilter;
+				
+				var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
+				var movieGeometry = new THREE.PlaneGeometry( 0.4, 0.4, 1, 1 );
+				var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
+				
+				movieScreen.rotation.x = -Math.PI/2;
+				movieScreen.position.set(offset.x, offset.y, offset.z);
+				scene.add(movieScreen);
+			}
 
 			function init() {
 				
@@ -132,24 +189,11 @@
 				
 				
 				
-				sparkOptions = {
-					position: new THREE.Vector3(),
-					positionRandomness: 0.0,
-					velocity: new THREE.Vector3(0,0.0,0),
-					velocityRandomness: 0.00,
-					color: 0xffff88,
-					colorRandomness: .2,
-					turbulence: 0.0,
-					lifetime: 0.25,
-					size: 3,
-					sizeRandomness: 1,
-					gravity: 8
-				};
+				particleSystem = new THREE.GPUParticleSystem( {
+				maxParticles: 250000
+				} );
 
-				spawnerOptions = {
-					sparkRate: 60,
-					timeScale: 1
-				};
+				scene.add( particleSystem );
 				
 				
 				window.addEventListener( 'resize', onResize, false );
@@ -181,6 +225,7 @@
 					} );	
 					
 					spawnerOptions.spawnRate = 10000;
+					loadVideo();
 					
 				});		
 				loader.load( 'floor.glb', function( gltf ) {
@@ -194,12 +239,9 @@
 					scene.add( flo );
 				});		
 				
-				offset = new THREE.Vector3(0.30, 2.31, 0.685);
-				scale = 1.0/200000.0;
-				
+
+				//Read the laser path
 				str = loadFile("path.txt").split("\n");
-				
-				
 				for(i=0; i<str.length; ++i)
 				{
 					coords = str[i].split(" ");
@@ -208,53 +250,8 @@
 					laserMovement.add(new THREE.LineCurve3(startPoint, endPoint));
 					
 				}
-				
-				
-				
-				
-				video = document.createElement( 'video' );
-				video.src = "path.mp4";
-				video.autoplay = true;
-				video.loop = true;
-				video.preload = "metadata";
-				video.load();
 
-				
-				videoImage = document.createElement( 'canvas' );
-				videoImage.width = 1000;
-				videoImage.height = 1000;
-
-				videoImageContext = videoImage.getContext( '2d' );
-				videoImageContext.fillStyle = '#000000';
-				videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
-
-				videoTexture = new THREE.Texture( videoImage );
-				videoTexture.minFilter = THREE.LinearFilter;
-				videoTexture.magFilter = THREE.LinearFilter;
-				
-				var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
-				var movieGeometry = new THREE.PlaneGeometry( 0.4, 0.4, 1, 1 );
-				var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
-				
-				movieScreen.rotation.x = -Math.PI/2;
-				movieScreen.position.set(offset.x, offset.y, offset.z);
-				scene.add(movieScreen);
-				
-				
-				
-				
-				particleSystem = new THREE.GPUParticleSystem( {
-				maxParticles: 250000
-				} );
-
-				scene.add( particleSystem );
-
-
-
-				
-				
 				container.appendChild( renderer.domElement );
-				
 				controls = new THREE.OrbitControls( camera, renderer.domElement );
 				controls.target = cameraTarget.clone();
 				controls.enablePan = false;
@@ -318,9 +315,11 @@
 				
 				delta = clock.getDelta();
 				
+				if(video != null)
+				{
+					vt = video.currentTime;
+				}
 				
-				vt = video.currentTime;
-					
 				if(isTransition)
 				{
 					transitionT -= delta;
@@ -355,35 +354,37 @@
 				end1 = 0.67;
 				end2 = end1+0.67;
 				
-				
-				if(vt<10)
+				if(video != null)
 				{
-					laserPos = laserMovement.getPoint(vt/10.0);
-					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
-					if(movablePart != null) movablePart.position.z = end1;
-				}
-				else if(vt<12)
-				{
-					laserSpot.set(0, 0, 0);
-					if(movablePart != null) movablePart.position.z = (end1*(12-vt)+end2*(vt-10))/2.0;
-				}
-				else if(vt<22)
-				{
-					laserPos = laserMovement.getPoint((vt-12)/10.0);
-					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
-					if(movablePart != null) movablePart.position.z = end2;
-				}
-				else
-				{
-					laserSpot.set(0, 0, 0);
-					if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
-				}
-				
-				if(video.paused)
-				{
-					laserSpot.set(0, 0, 0);
-					video.play();
-				}
+					if(vt<10)
+					{
+						laserPos = laserMovement.getPoint(vt/10.0);
+						laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
+						if(movablePart != null) movablePart.position.z = end1;
+					}
+					else if(vt<12)
+					{
+						laserSpot.set(0, 0, 0);
+						if(movablePart != null) movablePart.position.z = (end1*(12-vt)+end2*(vt-10))/2.0;
+					}
+					else if(vt<22)
+					{
+						laserPos = laserMovement.getPoint((vt-12)/10.0);
+						laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
+						if(movablePart != null) movablePart.position.z = end2;
+					}
+					else
+					{
+						laserSpot.set(0, 0, 0);
+						if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
+					}
+					
+					if(video.paused)
+					{
+						laserSpot.set(0, 0, 0);
+						video.play();
+					}
+				}	
 				
 				if(isInside)
 				{
@@ -393,7 +394,7 @@
 					
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
 					{
-						sparkOptions.position = laserSpot.clone()/*cameraTarget.clone()*/;
+						sparkOptions.position = laserSpot.clone();
 						sparkOptions.lifeTime = Math.max(0.25, 2*delta);
 						velocity = new THREE.Vector3();
 						velocity.x = Math.random()-0.5;
@@ -402,13 +403,6 @@
 						velocity.multiplyScalar(0.5);
 						
 						sparkOptions.position.addScaledVector(velocity, -0.7*delta);
-						//options2.position = laserSpot.position.clone();
-
-						for ( var x = 0; x < spawnerOptions.spawnRate * delta; x ++ ) {
-
-							//particleSystem.spawnParticle( options );
-
-						}
 						
 						perSpark = spawnerOptions.spawnRate*delta / Math.ceil(spawnerOptions.sparkRate * delta)
 						for ( var x = 0; x < perSpark ; x ++ ) {
@@ -420,17 +414,14 @@
 							
 							sparkOptions.position.addScaledVector(velocity, d);
 							velocity.y -= d*sparkOptions.gravity;
-							//particleSystem.update( tick-delta+x*(1.0/spawnerOptions.spawnRate));
-
 						}
 					}
 					
 					particleSystem.update( tick );
-						
 				}
 				
 				
-				if ( video.readyState === video.HAVE_ENOUGH_DATA ) 
+				if (video != null && video.readyState === video.HAVE_ENOUGH_DATA ) 
 				{
 					videoImageContext.drawImage( video, 0, 0 );
 					if ( videoTexture ) 
@@ -443,14 +434,6 @@
 				renderer.render( scene, camera );
 
 				stats.update();
-				
-				/*
-				if(isInside)
-				{
-					scene.remove(totalCurve);
-				}
-				*/
-
 			}
 
 			init();
