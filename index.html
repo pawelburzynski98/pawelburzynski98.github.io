@@ -442,8 +442,7 @@
 					
 				delta = clock.getDelta();
 				t = clock.getElapsedTime();
-				if(delta>1/30.0) delta = 1/30.0;
-				tick += delta;
+				
 				
 				vt = video.currentTime;
 					
@@ -610,7 +609,8 @@
 						currentSegment += 1;
 					}
 					*/
-					
+					if(delta>1/30.0) delta = 1/30.0;
+					tick += delta;
 					
 					for(var j=0; j<spawnerOptions.sparkRate * delta; ++j)
 					{
