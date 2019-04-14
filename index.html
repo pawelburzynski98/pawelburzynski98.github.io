@@ -507,6 +507,12 @@
 					laserSpot.set(0, 0, 0);
 					if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
 				}
+				
+				if(video.paused)
+				{
+					laserSpot.set(0, 0, 0);
+					video.play();
+				}
 				/*
 				t = tScale*t-Math.floor(tScale*t);
 				cutoff = 0.8;
