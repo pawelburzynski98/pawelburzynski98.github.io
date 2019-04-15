@@ -66,6 +66,7 @@
 
 			var container, stats, controls;
 			var camera, scene, renderer, light;
+			
 	
 			//Variables for transitioning from inside to outside and vice versa
 			var cameraTarget = new THREE.Vector3( 0.35, 2.7, 0.8 );
@@ -111,6 +112,7 @@
 
 			var video, videoImage, videoImageContext, videoTexture;
 			var movieScreen;
+			var vt = 0;
 			
 			
 			
@@ -126,6 +128,7 @@
 				video.loop = true;
 				video.preload = "metadata";
 				video.load();
+				video.currentTime = vt;
 
 				
 				videoImage = document.createElement( 'canvas' );
@@ -360,37 +363,35 @@
 				end1 = 0.67;
 				end2 = end1+0.67;
 				
-				if(video != null)
+
+				if(vt<10)
 				{
-					if(vt<10)
-					{
-						laserPos = laserMovement.getPoint(vt/10.0);
-						laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
-						if(movablePart != null) movablePart.position.z = end1;
-					}
-					else if(vt<12)
-					{
-						laserSpot.set(0, 0, 0);
-						if(movablePart != null) movablePart.position.z = (end1*(12-vt)+end2*(vt-10))/2.0;
-					}
-					else if(vt<22)
-					{
-						laserPos = laserMovement.getPoint((vt-12)/10.0);
-						laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
-						if(movablePart != null) movablePart.position.z = end2;
-					}
-					else
-					{
-						laserSpot.set(0, 0, 0);
-						if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
-					}
-					
-					if(isInside && video.paused)
-					{
-						laserSpot.set(0, 0, 0);
-						video.play();
-					}
-				}	
+					laserPos = laserMovement.getPoint(vt/10.0);
+					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
+					if(movablePart != null) movablePart.position.z = end1;
+				}
+				else if(vt<12)
+				{
+					laserSpot.set(0, 0, 0);
+					if(movablePart != null) movablePart.position.z = (end1*(12-vt)+end2*(vt-10))/2.0;
+				}
+				else if(vt<22)
+				{
+					laserPos = laserMovement.getPoint((vt-12)/10.0);
+					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
+					if(movablePart != null) movablePart.position.z = end2;
+				}
+				else
+				{
+					laserSpot.set(0, 0, 0);
+					if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
+				}
+				
+				if(isInside && video.paused)
+				{
+					laserSpot.set(0, 0, 0);
+					video.play();
+				}
 				
 				if(isInside)
 				{
