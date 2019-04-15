@@ -121,7 +121,7 @@
 			function loadVideo() {
 				video = document.createElement( 'video' );
 				video.src = "path.mp4";
-				video.autoplay = true;
+				//video.autoplay = true;
 				video.loop = true;
 				video.preload = "metadata";
 				video.load();
@@ -343,8 +343,9 @@
 							controls.minDistance = 2.8;
 							controls.maxDistance = 10.5;
 							document.getElementById("button").innerHTML = "Look inside!";
+							controls.enabled = true;
 						}
-						controls.enabled = true;
+						
 						transitionT = 0;
 					}
 					controls.update();
