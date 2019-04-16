@@ -363,28 +363,31 @@
 				end1 = 0.67;
 				end2 = end1+0.67;
 				
+				var laserTime = 16.0;
+				var eraseTime = 2.0;
+				
 
-				if(vt<10)
+				if(vt<laserTime)
 				{
-					laserPos = laserMovement.getPoint(vt/10.0);
+					laserPos = laserMovement.getPoint(vt/laserTime);
 					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
 					if(movablePart != null) movablePart.position.z = end1;
 				}
-				else if(vt<12)
+				else if(vt<laserTime+eraseTime)
 				{
 					laserSpot.set(0, 0, 0);
-					if(movablePart != null) movablePart.position.z = (end1*(12-vt)+end2*(vt-10))/2.0;
+					if(movablePart != null) movablePart.position.z = (end1*(laserTime+eraseTime-vt)+end2*(vt-laserTime))/eraseTime;
 				}
-				else if(vt<22)
+				else if(vt<2*laserTime+eraseTime)
 				{
-					laserPos = laserMovement.getPoint((vt-12)/10.0);
+					laserPos = laserMovement.getPoint((vt-laserTime-eraseTime)/laserTime);
 					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
 					if(movablePart != null) movablePart.position.z = end2;
 				}
 				else
 				{
 					laserSpot.set(0, 0, 0);
-					if(movablePart != null) movablePart.position.z = (end2*(24-vt)+end1*(vt-22))/2.0;
+					if(movablePart != null) movablePart.position.z = (end2*(2*laserTime+2*eraseTime-vt)+end1*(vt-2*laserTime-eraseTime))/eraseTime;
 				}
 				
 				if(isInside && video.paused)
