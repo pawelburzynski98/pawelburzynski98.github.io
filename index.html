@@ -185,11 +185,13 @@
 				scene.add( ambient );	
 				var spotLight1 = new THREE.SpotLight( 0xffffff, 0.6 );
 				var spotLight2 = new THREE.SpotLight( 0xffffff, 0.6 );
-				
+				var light_inside = new THREE.PointLight( 0xffffff, 0.6 );
 
 				spotLight1.position.set( 10, 8, 10 );
 				spotLight2.position.set( -10, 8, 10 );
+				light_inside.position.set( -0.2, 3.1, 1.0 );
 				scene.add(  spotLight1, spotLight2 );
+				scene.add(light_inside);
 				
 				
 				
