@@ -63,7 +63,6 @@
 		<script src="three.js"></script>
 
 		<script src="inflate.min.js"></script>
-		<script src="FBXLoader.js"></script>
 		<script src="STLLoader.js"></script>
 		<script src="OrbitControls.js"></script>
 		<script src="DRACOLoader.js"></script>
@@ -89,14 +88,14 @@
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-				camera.position.set( 50, 200, 280 );
+				camera.position.set( 50, 150, 100 );
 				controls = new THREE.OrbitControls( camera );
 				controls.target.set( 0, 0, 0 );
 				controls.minDistance = 50;
 				controls.maxDistance = 600;
 				controls.update();
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0x9f9fa9 );
+				//scene.background = new THREE.Color( 0x9f9fa9 );
 				light = new THREE.HemisphereLight( 0xffffff, 0x444444, 1 );
 				light.position.set( 0, 100, 0 );
 				scene.add( light );
@@ -230,7 +229,6 @@
 			function animate() {
 				requestAnimationFrame( animate );
 				var delta = clock.getDelta();
-				if ( mixer ) mixer.update( delta );
 				renderer.render( scene, camera );
 				stats.update();
 			}
@@ -360,21 +358,7 @@
 				if( krok == 5) {
 					krok = 6;
 					document.getElementById("but6").style.color="white";
-					var loader2 = new THREE.FBXLoader();
-					loader2.load( 'Samba Dancing.fbx', function ( object ) {
-						mixer = new THREE.AnimationMixer( object );
-						var action = mixer.clipAction( object.animations[ 0 ] );
-						action.play();
-						object.traverse( function ( child ) {
-							if ( child.isMesh ) {
-								child.castShadow = true;
-								child.receiveShadow = true;
-							}
-						} );
-						object.scale.set(0.5, 0.5, 0.5);
-						scene.remove(tacka5);
-						scene.add( object );
-					} );
+					scene.remove(tacka5);
 						
 					animate();
 				}
