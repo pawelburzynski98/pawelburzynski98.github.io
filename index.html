@@ -113,12 +113,19 @@
 			var video, videoImage, videoImageContext, videoTexture;
 			var movieScreen;
 			var vt = 0;
+			var framerate = 24;
 			
 			
 			
 			//Offset and scale for calculating the position of the laser spot
 			var offset = new THREE.Vector3(0.30, 2.31, 0.685);
-			var scale = 1.0/200000.0;
+			var scale = 1.0/200000.0*1024.0/1000.0;
+			//I have no idea why 1024.0/1000.0, but here it is
+			var additionalOffset = new THREE.Vector3(0.4*(24.0/1024.0)/2, 0, 0.4*(24.0/1024.0)/2);
+			
+			var laserByFrame = [];
+			
+			
 			
 			
 			function loadVideo() {
@@ -144,8 +151,10 @@
 				videoTexture.magFilter = THREE.LinearFilter;
 				
 				var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
-				var movieGeometry = new THREE.PlaneGeometry( 0.4, 0.4, 1, 1 );
+				var movieGeometry = new THREE.PlaneGeometry( 0.40, 0.40 );
 				movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
+				
+				
 				
 				movieScreen.rotation.x = -Math.PI/2;
 				movieScreen.position.set(offset.x, offset.y, offset.z);
@@ -247,13 +256,17 @@
 				
 
 				//Read the laser path
-				str = loadFile("path.txt").split("\n");
+				
+				str = loadFile("positionbyframe.txt").split("\n");
 				for(i=0; i<str.length; ++i)
 				{
+					if(str[i]=="-") {
+						laserByFrame.push(new THREE.Vector3(0, 0, 0));
+						continue;
+					}
 					coords = str[i].split(" ");
-					startPoint = new THREE.Vector3(parseFloat(coords[0]), 0.0, parseFloat(coords[1])).multiplyScalar(scale).add(offset);
-					endPoint = new THREE.Vector3(parseFloat(coords[2]), 0.0, parseFloat(coords[3])).multiplyScalar(scale).add(offset);
-					laserMovement.add(new THREE.LineCurve3(startPoint, endPoint));
+					point = new THREE.Vector3(parseFloat(coords[0]), 0.0, parseFloat(coords[1])).multiplyScalar(scale).add(offset).add(additionalOffset);
+					laserByFrame.push(point);
 					
 				}
 
@@ -265,7 +278,6 @@
 				controls.minDistance = 2.8;
 				controls.maxDistance = 10.5;
 				controls.update();
-
 			}
 			
 			function goInside() {
@@ -371,27 +383,22 @@
 
 				if(vt<laserTime)
 				{
-					laserPos = laserMovement.getPoint(vt/laserTime);
-					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
 					if(movablePart != null) movablePart.position.z = end1;
 				}
 				else if(vt<laserTime+eraseTime)
 				{
-					laserSpot.set(0, 0, 0);
 					if(movablePart != null) movablePart.position.z = (end1*(laserTime+eraseTime-vt)+end2*(vt-laserTime))/eraseTime;
 				}
 				else if(vt<2*laserTime+eraseTime)
 				{
-					laserPos = laserMovement.getPoint((vt-laserTime-eraseTime)/laserTime);
-					laserSpot.set(laserPos.x, laserPos.y, laserPos.z);
 					if(movablePart != null) movablePart.position.z = end2;
 				}
 				else
 				{
-					laserSpot.set(0, 0, 0);
 					if(movablePart != null) movablePart.position.z = (end2*(2*laserTime+2*eraseTime-vt)+end1*(vt-2*laserTime-eraseTime))/eraseTime;
 				}
-				
+			
+				laserSpot = laserByFrame[Math.floor(vt*framerate)];
 				if(isInside && video.paused)
 				{
 					laserSpot.set(0, 0, 0);
