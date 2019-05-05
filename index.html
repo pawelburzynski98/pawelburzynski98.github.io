@@ -342,7 +342,7 @@
 				if(isTransition)
 				{
 					transitionT -= delta;
-					controls.enabled = false;
+					controls.enabled = true;
 					camPos = curve.getPoint(transitionT>0.0 ? transitionT : 0.0);
 					camera.position.set(camPos.x, camPos.y, camPos.z);
 					if(transitionT<0.0)
